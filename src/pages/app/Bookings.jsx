@@ -1,7 +1,10 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router";
+
 
 const Bookings = () => {
   const [activeTab, setActiveTab] = useState("private");
+ const navigate = useNavigate()
 
   const users = [
     {
@@ -17,6 +20,10 @@ const Bookings = () => {
         "https://i.pravatar.cc/40?img=1", // placeholder avatar
     },
   ];
+
+   const handleRowClick = () => {
+    navigate(`/app/bookingdetails`)
+  }
 
   return (
     <div className="p-6 pt-2 min-h-screen mt-4 ">
@@ -103,7 +110,9 @@ const Bookings = () => {
                 .map((user, index) => (
                   <div
                     key={index}
-                    className="grid grid-cols-9 border-b last:border-none text-sm font-medium text-gray-700"
+                    className="grid grid-cols-9 border-b last:border-none text-sm font-medium text-gray-700 cursor-pointer"
+                                  onClick={handleRowClick}
+
                   >
                     <div className="py-4 px-4">{index + 1}</div>
                     <div className="py-4 px-4">{index + 1}</div>
