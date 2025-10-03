@@ -34,7 +34,7 @@ export const sidebarData = [
   },
 
  {
-    title: "Notifications",
+    title: "Push Notifications",
     icon: <Bell />,
     link: "/app/notifications",
   },

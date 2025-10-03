@@ -32,7 +32,7 @@ const Bookings = () => {
           <button
             onClick={() => setActiveTab("private")}
             className={`px-11 py-2 rounded-lg font-medium ${activeTab === "private"
-                ? "bg-[#24A3FF] text-white"
+                ? "button-bg text-white"
                 : "text-gray-600 hover:bg-gray-100"
               }`}
           >
@@ -41,7 +41,7 @@ const Bookings = () => {
           <button
             onClick={() => setActiveTab("multi")}
             className={`px-11 py-2  rounded-lg font-medium ${activeTab === "multi"
-                ? "bg-[#24A3FF] text-white"
+                ? "button-bg text-white"
                 : "text-gray-600 hover:bg-gray-100"
               }`}
           >
@@ -50,7 +50,7 @@ const Bookings = () => {
           <button
             onClick={() => setActiveTab("semiprivate")}
             className={`px-12 py-2 ml-1 rounded-lg font-medium ${activeTab === "semiprivate"
-                ? "bg-[#24A3FF] text-white"
+                ? "button-bg text-white"
                 : "text-gray-600 hover:bg-gray-100"
               }`}
           >
@@ -83,16 +83,16 @@ const Bookings = () => {
         <div className="overflow-x-auto">
           <div className="text-left text-sm border-b bg-[#F9FAFA] p-4 rounded-lg font-semibold">
             {/* Table Header */}
-            <div className="grid grid-cols-9 text-left bg-[#DEF5FF] rounded-lg">
-              <div className="py-4 px-4 font-semibold">#</div>
-              <div className="py-4 font-semibold">Booking Id</div>
-              <div className="py-4 px-2 font-semibold">Booking Type</div>
-              <div className="py-4 px-8 font-semibold">Bed Type</div>
-              <div className="py-4 px-4 font-semibold">Location</div>
-              <div className="py-4 px-2 font-semibold">Host Name</div>
-              <div className="py-4  font-semibold">User Name</div>
-              <div className="py-4  font-semibold">Stay Duration</div>
-              <div className="py-4 px-4 font-semibold">Status</div>
+            <div className="grid grid-cols-9 text-left bg-[#DEF5FF] font-medium rounded-lg">
+              <div className="py-4 px-4 ">#</div>
+              <div className="py-4 ">Booking Id</div>
+              <div className="py-4 px-2">Booking Type</div>
+              <div className="py-4 px-8 ">Bed Type</div>
+              <div className="py-4 px-4 ">Location</div>
+              <div className="py-4 px-2 ">Host Name</div>
+              <div className="py-4  ">User Name</div>
+              <div className="py-4 ">Stay Duration</div>
+              <div className="py-4 px-4 ">Status</div>
 
             </div>
 
@@ -103,7 +103,7 @@ const Bookings = () => {
                 .map((user, index) => (
                   <div
                     key={index}
-                    className="grid grid-cols-9 border-b last:border-none text-sm text-gray-700"
+                    className="grid grid-cols-9 border-b last:border-none text-sm font-medium text-gray-700"
                   >
                     <div className="py-4 px-4">{index + 1}</div>
                     <div className="py-4 px-4">{index + 1}</div>

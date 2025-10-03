@@ -65,8 +65,8 @@ const UserDetails = () => {
         <h2 className="text-xl font-semibold mb-4">Bookings (104)</h2>
 
         {/* Tabs */}
-        <div className="flex gap-2 mb-4 pl-2 bg-white py-1 rounded-xl w-[400px]">
-          {["Private", "Multi", "Multi"].map((tab) => (
+        <div className="flex gap-2 mb-4 pl-2 bg-white py-1 rounded-xl w-[450px]">
+          {["Private", "Multi", "Semi Private"].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab.toLowerCase())}
@@ -91,7 +91,7 @@ const UserDetails = () => {
                 className={`px-4 py-1.5 rounded-full border text-sm ${
                   activeFilter === filter.toLowerCase()
                     ? "bg-sky-500 text-white border-sky-500"
-                    : "bg-blue-100 border border-[#36C0EF] text-black hover:bg-gray-100"
+                    : "bg-blue-100 border border-[#36C0EF] text-black hover:text-white hover:bg-[#36C0EF]"
                 }`}
               >
                 {filter}

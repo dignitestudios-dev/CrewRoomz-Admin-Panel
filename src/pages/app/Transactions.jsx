@@ -2,6 +2,7 @@ import React, { useState } from "react";
 
 const Transactions = () => {
   const [activeTab, setActiveTab] = useState("bookings");
+  const [activeFilter, setActiveFilter] = useState("received");
 
   const users = [
     {
@@ -32,7 +33,7 @@ const Transactions = () => {
           onClick={() => setActiveTab("bookings")}
           className={`px-8 py-2 rounded-lg font-medium ${
             activeTab === "bookings"
-              ? "bg-[#24A3FF] text-white"
+              ? "button-bg text-white"
               : "text-gray-600 hover:bg-gray-100"
           }`}
         >
@@ -42,7 +43,7 @@ const Transactions = () => {
           onClick={() => setActiveTab("subscriptions")}
           className={`px-6 py-2 rounded-lg font-medium ${
             activeTab === "subscriptions"
-              ? "bg-[#24A3FF] text-white"
+              ? "button-bg text-white"
               : "text-gray-600 hover:bg-gray-100"
           }`}
         >
@@ -51,45 +52,48 @@ const Transactions = () => {
       </div>
 
 
-     <div className="flex gap-2 mb-4 ">
-  <button
-    onClick={() => setActiveTab("bookings")}
-    className={`px-6 py-2 rounded-full  font-medium transition ${
-      activeTab === "bookings"
-        ? "bg-[#24A3FF] text-white"
-        : "bg-white text-gray-600 hover:bg-gray-100"
-    }`}
-  >
-    Received
-  </button>
+    {/* Show Received/Refund buttons only for Bookings */}
+      {activeTab === "bookings" && (
+        <div className="flex gap-2 mb-4">
+          <button
+            onClick={() => setActiveFilter("received")}
+            className={`px-6 py-2 rounded-full font-medium transition ${
+              activeFilter === "received"
+                ? "button-bg text-white"
+                : "bg-white text-gray-600 hover:bg-gray-100"
+            }`}
+          >
+            Received
+          </button>
+          <button
+            onClick={() => setActiveFilter("refund")}
+            className={`px-6 py-2 rounded-full font-medium transition ${
+              activeFilter === "refund"
+                ? "button-bg text-white"
+                : "bg-white text-gray-600 hover:bg-gray-100"
+            }`}
+          >
+            Refund
+          </button>
+        </div>
+      )}
 
-  <button
-    onClick={() => setActiveTab("subscriptions")}
-    className={`px-6 py-2 rounded-full  font-medium transition ${
-      activeTab === "subscriptions"
-        ? "bg-[#24A3FF] text-white"
-        : "bg-white text-gray-600 hover:bg-gray-100"
-    }`}
-  >
-    Refund
-  </button>
-</div>
 
       {/* </div> */}
 
       {/* Table */}
     <div className="bg-white rounded-2xl shadow p-4">
   <div className="overflow-x-auto">
-    <div className="text-left text-sm border-b bg-[#F9FAFA] p-2 rounded-lg font-semibold">
+    <div className="text-left text-sm border-b bg-[#F9FAFA] p-2 rounded-lg ">
       {/* Table Header */}
-      <div className="grid grid-cols-8 text-left bg-[#DEF5FF] rounded-lg">
-        <div className="py-4 px-4 font-semibold">#</div>
-        <div className="py-4 font-semibold">Name</div>
-        <div className="py-4 px-4 font-semibold col-span-2">Description</div>
-        <div className="py-4 px-4 font-semibold">Location</div>
-        <div className="py-4  font-semibold">Subscription Plan</div>
-        <div className="py-4 px-4 font-semibold">Join Date</div>
-        <div className="py-4 px-4 font-semibold">Status</div>
+      <div className="grid grid-cols-8 text-left bg-[#DEF5FF] rounded-lg font-medium">
+        <div className="py-4 px-4 ">#</div>
+        <div className="py-4 ">Name</div>
+        <div className="py-4 px-4  col-span-2">Description</div>
+        <div className="py-4 px-4 ">Location</div>
+        <div className="py-4  ">Subscription Plan</div>
+        <div className="py-4 px-4 ">Join Date</div>
+        <div className="py-4 px-4 ">Status</div>
       </div>
 
       {/* Table Rows */}
@@ -99,7 +103,7 @@ const Transactions = () => {
           .map((user, index) => (
             <div
               key={index}
-              className="grid grid-cols-8 border-b last:border-none text-sm text-gray-700"
+              className="grid grid-cols-8 border-b last:border-none text-sm font-medium text-gray-700"
             >
               <div className="py-4 px-4">{index + 1}</div>
               <div className="py-4  flex items-center gap-2">

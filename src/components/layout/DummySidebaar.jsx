@@ -44,8 +44,8 @@ const DummySidebar = () => {
           key={sidebar?.link}
           className={({ isActive }) =>
             isActive
-              ? "text-[14px] flex items-center gap-4 px-6 py-3 rounded-full bg-white text-[#0893F0] hover:bg-white transition-all duration-200 ease-in-out"
-              : "text-[14px] flex items-center gap-4 px-6 py-3 rounded-full text-white hover:bg-gray-100 hover:text-[#0893F0] transition-all duration-200 ease-in-out"
+              ? "text-[14px] font-bold flex items-center gap-4 px-6 py-3 rounded-full bg-white text-[#0893F0] hover:bg-white transition-all duration-200 ease-in-out"
+              : "text-[14px]  font-bold flex items-center gap-4 px-6 py-3 rounded-full text-white hover:bg-gray-100 hover:text-[#0893F0] transition-all duration-200 ease-in-out"
           }
           to={sidebar?.link}
         >
@@ -63,7 +63,7 @@ const DummySidebar = () => {
       {/* ✅ Logout Button */}
       <button
         onClick={() => setShowLogoutModal(true)}
-        className="text-sm flex items-center mt-16 gap-4 font-semibold px-4 py-3 rounded-full text-white hover:bg-gray-100 hover:text-[#0893F0] transition-all duration-200 ease-in-out"
+        className="text-sm font-bold  flex items-center mt-16 gap-4 font-semibold px-4 py-3 rounded-full text-white hover:bg-gray-100 hover:text-[#0893F0] transition-all duration-200 ease-in-out"
       >
         <LogOut className="inline-block mr-2 ml-3" /> Logout
       </button>

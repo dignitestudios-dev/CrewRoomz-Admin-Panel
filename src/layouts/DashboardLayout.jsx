@@ -4,6 +4,7 @@ import DummySidebaar from "../components/layout/DummySidebaar";
 import { useEffect, useState } from "react";
 import NoInternetModal from "../components/global/NoInternet";
 import { NoInternetImage } from "../assets/export";
+import { background } from "../assets/export";
 
 const DashboardLayout = () => {
   const [openNoInternet, setOpenNoInternet] = useState(false);
@@ -15,8 +16,15 @@ const DashboardLayout = () => {
   }, []);
 
   return (
-    <div className="gradient-color overflow-y-auto">
-  
+    <div className="overflow-y-auto"
+    
+    style={{
+    backgroundImage: `url(${background})`,
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+  }}
+>
+    
     <div className="">
     <div className="w-full h-screen flex overflow-hidden">
       <div className=" h-full mt-4 ml-4 rounded-xl bg-gray-50 overflow-y-auto overflow-hidden scrollbar-hidden">

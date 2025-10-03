@@ -97,7 +97,7 @@ const DummyHome = () => {
   return (
     <div className="p-6 pt-2 space-y-6  h-screen">
       {/* Heading */}
-      <h1 className="text-3xl mt-4 font-bold text-gray-800">Dashboard</h1>
+      <h1 className="text-3xl mt-4 font-extrabold text-black">Dashboard</h1>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">

@@ -11,9 +11,12 @@ import van from "./van.png";
 import loginbg from "./loginbg.png";
 import sidebar from "./sidebar.png"    
 import login from "./login.png"
+import background from "./background.png"
+import calendar from "./calendar.png"
+import warning from "./warning.png"
 
 // export {
 //     FILENAME(PASCALCASE)
 // }
 
-export { Logo, NoInternetImage, audi, hyundai, van, loginbg, sidebar,login };
+export { Logo, NoInternetImage, audi, hyundai, van, loginbg, sidebar,login,background,calendar,warning };
