@@ -23,7 +23,7 @@ const Transactions = () => {
     <div className="p-6 pt-2 min-h-screen ">
       {/* Heading */}
       {/* <div className="flex flex-col md:flex-row md:justify-between md:items-center"> */}
-      <h1 className="text-3xl font-bold text-gray-800 mb-4 mt-4">
+      <h1 className=" text-3xl font-extrabold text-black mb-4 mt-4">
         Transaction Overview
       </h1>
 

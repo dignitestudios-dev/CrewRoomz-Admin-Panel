@@ -42,7 +42,7 @@ const UserDetails = () => {
   return (
     <div className="p-6 min-h-screen ">
       {/* Profile Header */}
-      <h1 className="text-[34px] text-black mb-2 font-semibold">Profile</h1>
+      <h1 className="text-[34px] text-black mb-2 font-extrabold">Profile</h1>
       <div className="bg-white rounded-2xl p-6 flex flex-col md:flex-row justify-between items-center shadow-sm">
         <div className="flex items-center gap-4">
           <img
