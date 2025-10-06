@@ -42,7 +42,7 @@ const ReportedIssues = () => {
     <div className="p-6 pt-2 min-h-screen ">
       {/* Heading */}
       <div className="flex flex-col mt-4 md:flex-row md:justify-between md:items-center">
-        <h1 className="text-3xl font-extrabold text-black mb-4">
+        <h1 className="text-[36px] font-extrabold text-black mb-4">
           Reported Issues
         </h1>
 
@@ -78,7 +78,7 @@ const ReportedIssues = () => {
             {/* Table Header */}
             <div className="grid grid-cols-9 text-left bg-[#DEF5FF] rounded-lg font-medium">
               <div className="py-4 px-4 ">#</div>
-              <div className="py-4 px-1 ">Lister Name</div>
+              <div className="py-4 px-1 ">Name</div>
               <div className="py-4 px-4 col-span-2">Reason</div>
               <div className="py-4  ">Reported By</div>
               <div className="py-4 px-4 "> Date</div>

@@ -3,14 +3,31 @@ import React from "react";
 import { BsFilePdf } from "react-icons/bs";
 import { FaWifi, FaSnowflake, FaSwimmingPool, FaCoffee, FaClipboardList } from "react-icons/fa";
 import { FaLocationPin } from "react-icons/fa6";
+import { FaArrowLeft } from 'react-icons/fa';  // Import the back arrow icon
+import { useNavigate } from "react-router";
+
 
 const BookingDetails = () => {
+  const navigate = useNavigate();
+
+  
+  const handleBack = () => {
+    navigate(-1);  // Goes back by one step in the history
+  };
+
   return (
     <div className="p-6 min-h-screen ">
       {/* Header */}
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-[36px] font-bold text-gray-800">Booking Detail</h1>
-        <span className=" text-sm font-semibold bg-[#DC1D00] text-white px-4 py-3 rounded-full">
+        <div className="flex items-center space-x-2">
+<button 
+        onClick={handleBack} 
+        className="pb-1 mr-1 font-bold text-black ">
+        <FaArrowLeft size={28} />
+      </button>
+      <h1 className="text-[36px] text-black mb-2 font-bold">Booking Details</h1>
+      </div>
+              <span className=" text-sm font-semibold bg-[#DC1D00] text-white px-4 py-3 rounded-full">
           Canceled
         </span>
       </div>

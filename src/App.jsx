@@ -29,6 +29,9 @@ import BookingDetails from "./pages/app/BookingDetails";
 import PrivacyPolicy from "./pages/app/PrivacyPolicy";
 import CookiePolicy from "./pages/app/CookiePolicy";
 import TermsandConditions from "./pages/app/TermsandConditions";
+import BookingDetailsUpcoming from "./pages/app/BookingDetailsUpcoming";
+import ListerDetails from "./pages/app/ListerDetails";
+import RecentSubscription from "./pages/app/RecentSubscription";
 
 function App() {
   return (
@@ -64,8 +67,11 @@ function App() {
         <Route path="transactions" element={<Transactions />} />
         <Route path="notifications" element={<Notifications />} />
         <Route path="bookingdetails" element={<BookingDetails />} />
+        <Route path="bookingdetailsupcoming" element={<BookingDetailsUpcoming />} />
         <Route path="user-details" element={<UserDetails />} />
-     
+        <Route path="lister-details" element={<ListerDetails />} />
+        <Route path="recent-subscription" element={<RecentSubscription />} />
+
 
       </Route>
 

@@ -15,8 +15,16 @@ import {
   Legend,
 } from "recharts";
 import { Chart } from "react-google-charts";
+import { useNavigate } from "react-router";
 
 const DummyHome = () => {
+ const navigate = useNavigate();
+
+  const handleViewAll = () => {
+    navigate('/app/recent-subscription');
+  };
+
+
   // Stats
   const stats = {
     totalListings: 10587,
@@ -97,7 +105,7 @@ const DummyHome = () => {
   return (
     <div className="p-6 pt-2 space-y-6  h-screen">
       {/* Heading */}
-      <h1 className="text-3xl mt-4 font-extrabold text-black">Dashboard</h1>
+      <h1 className="text-[36px] mt-4 font-extrabold text-black">Dashboard</h1>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
@@ -160,9 +168,12 @@ const DummyHome = () => {
       <div className="bg-white p-6 rounded-xl  ">
         <div className="flex justify-between items-center mb-4 ">
           <h3 className="text-[24px] font-bold">Recent Subscriptions</h3>
-          <button className="text-blue-500 text-sm hover:underline">
-            View All
-          </button>
+          <button
+      onClick={handleViewAll}
+      className="text-blue-500 text-sm hover:underline"
+    >
+      View All
+    </button>
         </div>
        <div className="w-full bg-[#F9FAFA] rounded-lg p-4 ">
   <div className="grid grid-cols-7 text-left text-sm border-b bg-[#DEF5FF] py-4 rounded-lg font-semibold">

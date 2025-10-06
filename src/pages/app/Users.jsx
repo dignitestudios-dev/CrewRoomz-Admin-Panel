@@ -28,7 +28,7 @@ const Users = () => {
     <div className="p-6 pt-2 min-h-screen ">
       {/* Heading */}
       <div className="flex flex-col mt-4 md:flex-row md:justify-between md:items-center">
-      <h1 className="text-3xl font-extrabold text-black mb-4">
+      <h1 className="text-[36px] font-extrabold text-black mb-4">
         User Management
       </h1>
 
@@ -93,7 +93,7 @@ const Users = () => {
                 {user.name}
               </div>
               <div className="py-4 px-4">{user.email}</div>
-              <div className="py-4 px-20 col-span-2">{user.totalProperties}</div>
+              <div className="py-4 px-28 col-span-2">{user.totalProperties}</div>
               <div className="py-4 px-4">{user.location}</div>
               <div className="py-4 px-4">{user.subscription}</div>
               <div className="py-4 px-4">{user.joinDate}</div>

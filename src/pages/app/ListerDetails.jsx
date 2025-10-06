@@ -1,13 +1,13 @@
 import React, { useState } from "react";
-import { FaStar } from "react-icons/fa";
+import { FaArrowLeft, FaStar } from "react-icons/fa";
 import { IoCalendarOutline } from "react-icons/io5";
 import { useNavigate } from "react-router";
-import { FaArrowLeft } from 'react-icons/fa';  // Import the back arrow icon
 
-const UserDetails = () => {
-  const [activeTab, setActiveTab] = useState("private");
-  const [activeFilter, setActiveFilter] = useState("all");
- const navigate = useNavigate();
+const ListerDetails = () => {
+  const [activeTab, setActiveTab] = useState("listings");
+  const [activeFilter, setActiveFilter] = useState("private");
+  const navigate = useNavigate();
+  
 
   const user = {
     id: 1,
@@ -42,11 +42,9 @@ const UserDetails = () => {
     }
   };
 
-
-  const handleBack = () => {
+   const handleBack = () => {
     navigate(-1);  // Goes back by one step in the history
   };
-
 
 
   return (
@@ -59,11 +57,9 @@ const UserDetails = () => {
         <FaArrowLeft size={28} />
       </button>
       <h1 className="text-[36px] text-black mb-2 font-bold">Profile</h1>
-    </div>
+    </div>     
     
-    
-    
-    <div className="bg-white rounded-2xl p-6 flex flex-col md:flex-row justify-between items-center shadow-sm">
+     <div className="bg-white rounded-2xl p-6 flex flex-col md:flex-row justify-between items-center shadow-sm">
         <div className="flex items-center gap-4">
           <img
             src={user.avatar}
@@ -82,11 +78,11 @@ const UserDetails = () => {
 
       {/* Bookings Section */}
       <div className="mt-6">
-        <h2 className="text-xl font-semibold mb-4">Bookings <span className="text-gray-500">(104)</span></h2>
+        {/* <h2 className="text-xl font-semibold mb-4">Bookings <span className="text-gray-500">(104)</span></h2> */}
 
         {/* Tabs */}
-        <div className="flex gap-2 mb-4 pl-2 bg-white py-1 rounded-xl w-[450px]">
-          {["Private", "Multi", "Semi Private"].map((tab) => (
+        <div className="flex gap-2 mb-4 pl-1 bg-white py-1 rounded-xl w-[300px]">
+          {["Listings", "Bookings"].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab.toLowerCase())}
@@ -103,14 +99,14 @@ const UserDetails = () => {
 
         {/* Filters */}
         <div className="flex flex-wrap gap-2 mb-4">
-          {["All", "On-going", "Upcoming", "Completed", "Canceled"].map(
+          {["private", "multi", "semi-private"].map(
             (filter) => (
               <button
                 key={filter}
                 onClick={() => setActiveFilter(filter.toLowerCase())}
                 className={`px-4 py-1.5 rounded-full border text-sm ${
                   activeFilter === filter.toLowerCase()
-                    ? "bg-sky-500 text-white border-sky-500"
+                    ? "button-bg text-white border-sky-500"
                     : "bg-blue-100 border border-[#36C0EF] text-black hover:text-white hover:bg-[#36C0EF]"
                 }`}
               >
@@ -183,4 +179,4 @@ const UserDetails = () => {
   );
 };
 
-export default UserDetails;
+export default ListerDetails;

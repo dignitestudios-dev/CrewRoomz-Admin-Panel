@@ -29,7 +29,7 @@ const Bookings = () => {
     <div className="p-6 pt-2 min-h-screen mt-4 ">
       {/* Heading */}
       {/* <div className="flex flex-col md:flex-row md:justify-between md:items-center"> */}
-      <h1 className=" text-3xl font-extrabold text-black  mb-4">
+      <h1 className="text-[36px] font-extrabold text-black  mb-4">
         Booking Management
       </h1>
 
