@@ -18,7 +18,7 @@ const DummyNavbar = () => {
         {/* User Avatar with Hover Effect */}
         <div className="relative group flex items-center space-x-3">
           <img
-            src={Logo} // Replace with actual user avatar
+            src="https://i.pravatar.cc/100?img=1" // Replace with actual user avatar
             alt="user-avatar"
             className="w-10 h-10 object-contain cursor-pointer rounded-full border-2 border-gray-300 transition-transform duration-300 ease-in-out transform group-hover:scale-110"
           />
