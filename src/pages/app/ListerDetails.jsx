@@ -1,74 +1,124 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaArrowLeft, FaStar } from "react-icons/fa";
 import { IoCalendarOutline } from "react-icons/io5";
-import { useNavigate } from "react-router";
+import { useNavigate, useLocation, useParams } from "react-router";
+import axios from "../../axios"; // Make sure axios is installed
 
 const ListerDetails = () => {
   const [activeTab, setActiveTab] = useState("listings");
   const [activeFilter, setActiveFilter] = useState("private");
+  const [listings, setListings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [page, setPage] = useState(1);
   const navigate = useNavigate();
-  
+  const location = useLocation();
+  const { userId } = useParams();
+  console.log("Lister ID from params:", userId);
 
-  const user = {
-    id: 1,
-    name: "Mike Smith",
-    email: "mikesmith.workemail@gmail.com",
-    avatar: "https://i.pravatar.cc/100?img=1",
-  };
+  const { name: stateName, email: stateEmail, profilePicture: stateProfilePicture } = location.state || {};
 
-  const bookings = [
-    { id: 1, status: "Ongoing", location: "Gaylar, Norway", rating: 4.5 },
-    { id: 2, status: "Upcoming", location: "Gaylar, Norway", rating: 4.5 },
-    { id: 3, status: "Canceled", location: "Gaylar, Norway", rating: 4.5 },
-    { id: 4, status: "Completed", location: "Gaylar, Norway", rating: 4.5 },
-    { id: 5, status: "Ongoing", location: "Gaylar, Norway", rating: 4.5 },
-    { id: 6, status: "Active", location: "Gaylar, Norway", rating: 4.5 },
-  ];
+  // Fetch Listings based on Filters and Pagination
+useEffect(() => {
+  const fetchListings = async () => {
+    setLoading(true);
+    setError(null);
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case "Ongoing":
-        return "bg-[#FBBC04] text-white";
-      case "Upcoming":
-        return "bg-[#349DC7] text-white";
-      case "Canceled":
-        return "bg-red-500 text-white";
-      case "Completed":
-        return "bg-[#34C759] text-white";
-      case "Active":
-        return "bg-[#34C759] text-white";
-      default:
-        return "bg-gray-400 text-white";
+    try {
+      const response = await axios.get(
+        `/admin/users/lister/${userId}?type=listing&roomType=${activeFilter}&page=${page}`
+      );
+      
+      console.log("API Response:", response.data); // Full API response
+      console.log("Listings:", response.data?.data?.listings); // Correct path to listings
+
+      // Access listings from the correct path
+      if (Array.isArray(response.data?.data?.listings) && response.data?.data?.listings.length > 0) {
+        setListings(response.data?.data?.listings);
+      } else {
+        setListings([]); // If no listings are found
+      }
+    } catch (err) {
+      setError("Failed to load listings.");
+      console.error("Error loading listings:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
-   const handleBack = () => {
-    navigate(-1);  // Goes back by one step in the history
+  fetchListings();
+}, [userId, activeFilter, page]);
+
+
+
+
+  const handleBack = () => {
+    navigate(-1); // Goes back by one step in the history
   };
 
+  const getStatusColor = (status) => {
+  switch (status) {
+    case "Ongoing":
+      return "bg-[#FBBC04] text-white"; // Yellow
+    case "Upcoming":
+      return "bg-[#349DC7] text-white"; // Blue
+    case "Canceled":
+      return "bg-red-500 text-white"; // Red
+    case "Completed":
+      return "bg-[#34C759] text-white"; // Green
+    case "active":
+      return "bg-[#34C759] text-white"; // Green
+    default:
+      return "bg-gray-400 text-white"; // Default grey
+  }
+};
+
+
+
+const ShimmerLoader = () => (
+  <div className="bg-white w-[327px] h-[280px] rounded-2xl shadow-sm overflow-hidden relative animate-pulse">
+    {/* Shimmer for Status Badge */}
+    <div className="absolute top-6 left-6 w-24 h-4 bg-gray-300 rounded-full"></div>
+
+    {/* Shimmer for Image */}
+    <div className="flex justify-center mt-3 p-4 pt-0 pb-1">
+      <div className="w-full h-[156px] bg-gray-300 rounded-lg"></div>
+    </div>
+
+    {/* Shimmer for Info */}
+    <div className="px-6 pt-0 pb-4">
+      <div className="flex justify-between">
+        <div className="w-1/2 h-4 bg-gray-300 rounded-lg"></div>
+        <div className="w-12 h-4 bg-gray-300 rounded-lg"></div>
+      </div>
+      <div className="mt-2">
+        <div className="w-full h-3 bg-gray-300 rounded-lg mb-2"></div>
+        <div className="w-full h-3 bg-gray-300 rounded-lg"></div>
+      </div>
+    </div>
+  </div>
+);
 
   return (
-    <div className="p-6 min-h-screen ">
+    <div className="p-6 min-h-screen">
       {/* Profile Header */}
-<div className="flex items-center space-x-2">
-      <button 
-        onClick={handleBack} 
-        className="pb-1 mr-1 font-bold text-black ">
-        <FaArrowLeft size={28} />
-      </button>
-      <h1 className="text-[36px] text-black mb-2 font-bold">Profile</h1>
-    </div>     
-    
-     <div className="bg-white rounded-2xl p-6 flex flex-col md:flex-row justify-between items-center shadow-sm">
+      <div className="flex items-center space-x-2">
+        <button onClick={handleBack} className="pb-1 mr-1 font-bold text-black">
+          <FaArrowLeft size={28} />
+        </button>
+        <h1 className="text-[36px] text-black mb-2 font-bold">Profile</h1>
+      </div>
+
+      <div className="bg-white rounded-2xl p-6 flex flex-col md:flex-row justify-between items-center shadow-sm">
         <div className="flex items-center gap-4">
           <img
-            src={user.avatar}
-            alt={user.name}
+            src={stateProfilePicture || "https://via.placeholder.com/100"}
+            alt={stateName || ""}
             className="w-20 h-20 rounded-full object-cover"
           />
           <div>
-            <h2 className="text-xl font-semibold">{user.name}</h2>
-            <p className="text-gray-500">{user.email}</p>
+            <h2 className="text-xl font-semibold">{stateName || "-"}</h2>
+            <p className="text-gray-500">{stateEmail || "-"}</p>
           </div>
         </div>
         <button className="bg-[#DC1D00] text-white px-6 py-4 rounded-full font-medium hover:bg-red-700 mt-4 md:mt-0">
@@ -78,8 +128,6 @@ const ListerDetails = () => {
 
       {/* Bookings Section */}
       <div className="mt-6">
-        {/* <h2 className="text-xl font-semibold mb-4">Bookings <span className="text-gray-500">(104)</span></h2> */}
-
         {/* Tabs */}
         <div className="flex gap-2 mb-4 pl-1 bg-white py-1 rounded-xl w-[300px]">
           {["Listings", "Bookings"].map((tab) => (
@@ -99,24 +147,25 @@ const ListerDetails = () => {
 
         {/* Filters */}
         <div className="flex flex-wrap gap-2 mb-4">
-          {["private", "multi", "semi-private"].map(
-            (filter) => (
-              <button
-                key={filter}
-                onClick={() => setActiveFilter(filter.toLowerCase())}
-                className={`px-4 py-1.5 rounded-full border text-sm ${
-                  activeFilter === filter.toLowerCase()
-                    ? "button-bg text-white border-sky-500"
-                    : "bg-blue-100 border border-[#36C0EF] text-black hover:text-white hover:bg-[#36C0EF]"
-                }`}
-              >
-                {filter}
-              </button>
-            )
-          )}
+          {["private", "multi", "semi-private"].map((filter) => (
+            <button
+              key={filter}
+              onClick={() => {
+                setPage(1);
+                setActiveFilter(filter.toLowerCase());
+              }}
+              className={`px-4 py-1.5 rounded-full border text-sm ${
+                activeFilter === filter.toLowerCase()
+                  ? "button-bg text-white border-sky-500"
+                  : "bg-blue-100 border border-[#36C0EF] text-black hover:text-white hover:bg-[#36C0EF]"
+              }`}
+            >
+              {filter}
+            </button>
+          ))}
           <div className="ml-auto flex gap-2">
             <button className="flex items-center gap-2 px-3 py-2 border rounded-full text-sm bg-white">
-            Calendar  <IoCalendarOutline /> 
+              Calendar <IoCalendarOutline />
             </button>
             <button className="px-6 py-1.5 border rounded-full text-sm bg-white">
               All
@@ -124,57 +173,76 @@ const ListerDetails = () => {
           </div>
         </div>
 
-        {/* Booking Cards */}
-        <div className="bg-white p-6 rounded-2xl">
-        <div className="grid grid-cols-1 pl-8  sm:grid-cols-2 lg:grid-cols-3 gap-6 bg-[#F9FAFA] p-2 pt-4 rounded-2xl">
-          
-          {bookings.map((b) => (
-            <div
-  key={b.id}
-  className="bg-white w-[327px] h-[265px] rounded-2xl shadow-sm overflow-hidden relative"
+<div className="bg-white p-4 rounded-2xl">
+<div className="grid grid-cols-1 pl-8 sm:grid-cols-2 lg:grid-cols-3 gap-6 bg-[#F9FAFA] p-4 pt-4 rounded-2xl">
+  {loading ? (
+    // Show shimmer loaders when loading
+    [...Array(6)].map((_, index) => (
+      <ShimmerLoader key={index} />
+    ))
+  ) : Array.isArray(listings) && listings.length > 0 ? (
+    listings.map((listing) => (
+    <div
+  key={listing._id}
+  onClick={() => navigate(`/app/roomdetails/${listing._id}`)}
+  className="bg-white w-[327px] h-[280px] rounded-2xl shadow-sm overflow-hidden relative cursor-pointer hover:shadow-md transition-shadow"
 >
-  {/* Status Badge */}
-  <span
-    className={`absolute top-6 left-6 px-3 py-1 text-xs font-medium rounded-full ${getStatusColor(
-      b.status
-    )}`}
-  >
-    {b.status}
-  </span>
+        {/* Status Badge */}
+        <span
+          className={`absolute top-6 left-6 px-3 py-1 text-xs font-medium rounded-full ${getStatusColor(listing.roomStatus)}`}
+        >
+          {listing.roomStatus}
+        </span>
 
-  {/* Image */}
-  <div className="flex justify-center mt-3 p-4 pt-0 pb-1">
-    <img
-      src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c"
-      alt={b.location}
-      className="w-full h-[156px] object-cover rounded-lg"  // Adjusting max width and keeping height fixed
-    />
-  </div>
+        {/* Image */}
+        <div className="flex justify-center mt-3 p-4 pt-0 pb-1">
+          <img
+            src={listing.media[0] || "https://via.placeholder.com/300"} // Ensure you are using the first media item
+            alt={listing.address || "No address"}
+            className="w-full h-[156px] object-cover rounded-lg"
+          />
+        </div>
 
-  {/* Info */}
-  <div className="px-6 pt-0 pb-4">
-    <div className="flex justify-between">
-  <h3 className="font-semibold text-[16px]">{b.location}</h3>
-  <div className="flex items-center gap-1 text-[14px] mt-1 ml-auto">
-    <FaStar className="text-yellow-400" />
-    <span>{b.rating}</span>
-  </div>
-</div>
-
-    <p className="text-gray-500 text-sm flex items-center">
-       456 Maple Street, Anytown, NY 12345
-    </p>
-    <p className="text-sm mt-2 font-medium">
-      1 King Bed, 1 Private Bath
-    </p>
-    
-  </div>
-</div>
-
-          ))}
+        {/* Info */}
+        <div className="px-6 pt-0 pb-4">
+          <div className="flex justify-between">
+            <h3 className="font-semibold text-[16px]">{listing.city}</h3>
+            <div className="flex items-center gap-1 text-[14px] mt-1 ml-auto">
+              <FaStar className="text-yellow-400" />
+              <span>{listing.averageRating || "N/A"}</span>
+            </div>
+          </div>
+          <p className="text-gray-500 text-sm">{listing.address || "No address"}</p>
+          <p className="text-sm mt-2 font-medium mb-4">{listing.bedDetails?.[0]?.type || "No bed type"}</p>
         </div>
       </div>
+    ))
+  ) : (
+    <p className="text-gray-500 p-4">No listings available</p>
+  )}
+</div>
     </div>
+
+
+
+
+        {/* Pagination */}
+        <div className="flex justify-center gap-4 mt-4">
+          <button
+            onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+            className="px-4 py-2 bg-gray-200 rounded-lg"
+            disabled={page === 1}
+          >
+            Previous
+          </button>
+          <button
+            onClick={() => setPage((prev) => prev + 1)}
+            className="px-4 py-2 bg-gray-200 rounded-lg"
+          >
+            Next
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

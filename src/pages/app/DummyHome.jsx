@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   FaUsers,
   FaDollarSign,
@@ -16,22 +16,79 @@ import {
 } from "recharts";
 import { Chart } from "react-google-charts";
 import { useNavigate } from "react-router";
+import axios from "../../axios"; // Make sure axios is configured correctly
+import moment from "moment";
 
 const DummyHome = () => {
- const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const handleViewAll = () => {
     navigate('/app/recent-subscription');
   };
 
+  const [stats, setStats] = useState({
+    totalListings: 0,
+    activeUsers: 0,
+    totalBookings: 0,
+    revenue: 0,
+    reportsPending: 0,
+  });
 
-  // Stats
-  const stats = {
-    totalListings: 10587,
-    activeUsers: 10587,
-    totalBookings: 10587,
-    revenue: 1086.98,
-    reportsPending: 9,
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [subscriptions, setSubscriptions] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [revenueData, setRevenueData] = useState([]);
+
+  // Fetch Stats
+   useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await axios.get("/admin/getStates");
+        if (response.data.success) {
+          setStats(response.data.data);
+        } else {
+          setError("Failed to load stats");
+        }
+      } catch (err) {
+        console.error("Error fetching stats:", err);
+        setError("An error occurred while fetching the data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStats();
+  }, []);
+  // Fetch Subscriptions
+  useEffect(() => {
+    const fetchSubscriptions = async () => {
+      setLoading(true);
+      try {
+        const response = await axios.get(`/admin/subscriptions?page=${currentPage}`);
+        if (response.data.success) {
+          setSubscriptions(response.data.data.subscriptions);
+          setTotalPages(response.data.data.pagination.totalPages);
+        } else {
+          setError("Failed to fetch subscriptions.");
+        }
+      } catch (err) {
+        console.error(err);
+        setError("Something went wrong while fetching subscriptions.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSubscriptions();
+  }, [currentPage]);
+
+  // Handle page change
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
   };
 
   // Line Chart Data
@@ -51,43 +108,64 @@ const DummyHome = () => {
   ];
 
   // Pie Chart Data (Google Charts format)
-  const pieData = [
-    ["Plan", "Revenue"],
-    ["Plan 1", 2098.88],
-    ["Plan 2", 2098.88],
-  ];
+ // Fetch Revenue by Plan
+  useEffect(() => {
+    const fetchRevenueData = async () => {
+      try {
+        const response = await axios.get("/admin/getRevenueByPlan");
+        if (response.data.success) {
+          const formattedData = [
+            ["Plan", "Revenue"],
+            ...response.data.data.result.map((plan) => [
+              plan.planName,
+              plan.revenue,
+            ]),
+          ];
+          setRevenueData(formattedData);
+        } else {
+          setError("Failed to load revenue data");
+        }
+      } catch (err) {
+        console.error("Error fetching revenue data:", err);
+        setError("An error occurred while fetching the revenue data");
+      } finally {
+        setLoading(false);
+      }
+    };
 
+    fetchRevenueData();
+  }, []);
+
+  // Pie chart options
   const pieOptions = {
-  title: "Revenue by Subscription",
-  titleTextStyle: {
-    alignment: "start", // Aligns title to the left
-    fontSize: 18,
-    bold: true,
-    color: "#233238",
-  },
-  is3D: true,
-  pieStartAngle: 100,
-  sliceVisibilityThreshold: 0.02,
-  backgroundColor: "#F9FAFA",
-  legend: {
-    position: "top",
-    alignment: "start", // Aligns legend to the left
-    textStyle: {
+    title: "Revenue by Subscription Plan",
+    titleTextStyle: {
+      alignment: "start",
+      fontSize: 18,
+      bold: true,
       color: "#233238",
-      fontSize: 14,
     },
-  },
-  colors: ["#FF8042", "#E040FB"],
-  chartArea: {
-    top: 70, // Add space so the legend + title fit
-    width: "100%",
-    height: "80%",
-  },
-};
+    is3D: true,
+    pieStartAngle: 100,
+    sliceVisibilityThreshold: 0.02,
+    backgroundColor: "#F9FAFA",
+    legend: {
+      position: "top",
+      alignment: "start",
+      textStyle: {
+        color: "#233238",
+        fontSize: 14,
+      },
+    },
+    colors: ["#FF8042", "#E040FB", "#0088FE"], // You can modify this if there are more plans
+    chartArea: {
+      top: 70,
+      width: "100%",
+      height: "80%",
+    },
+  };
 
-
-
-  // Bookings
+  // Bookings (for reference, can be used if needed)
   const bookings = [
     {
       id: 1,
@@ -102,41 +180,49 @@ const DummyHome = () => {
     },
   ];
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>{error}</div>;
+  }
+
   return (
-    <div className="p-6 pt-2 space-y-6  h-screen">
+    <div className="p-6 pt-2 space-y-6 h-screen">
       {/* Heading */}
       <h1 className="text-[36px] mt-4 font-extrabold text-black">Dashboard</h1>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-        <div className="bg-white p-4 rounded-3xl  text-left w-[209px] h-[112px]">
-          <h3 className="text-gray-500 text-sm ">Total Listings</h3>
+        <div className="bg-white p-4 rounded-3xl text-left w-[209px] h-[112px]">
+          <h3 className="text-gray-500 text-sm">Total Listings</h3>
           <p className="text-4xl font-semibold mt-3">{stats.totalListings}</p>
         </div>
         <div className="bg-white p-4 rounded-3xl text-left w-[209px] h-[112px]">
-          <h3 className="text-gray-500 text-sm ">Active Users</h3>
-          <p className="text-4xl font-semibold mt-3">{stats.activeUsers}</p>
+          <h3 className="text-gray-500 text-sm">Active Users</h3>
+          <p className="text-4xl font-semibold mt-3">{stats.totalActiveUsers}</p>
         </div>
-        <div className="bg-white p-4 rounded-3xl  text-left w-[209px] h-[112px]">
-          <h3 className="text-gray-500 text-sm ">Total Bookings</h3>
+        <div className="bg-white p-4 rounded-3xl text-left w-[209px] h-[112px]">
+          <h3 className="text-gray-500 text-sm">Total Bookings</h3>
           <p className="text-4xl font-semibold mt-3">{stats.totalBookings}</p>
         </div>
-        <div className="bg-white p-4 rounded-3xl  text-left w-[209px] h-[112px]">
-          <h3 className="text-gray-500 text-sm ">Revenue</h3>
-          <p className="text-4xl font-semibold mt-3">${stats.revenue}</p>
+        <div className="bg-white p-4 rounded-3xl text-left w-[209px] h-[112px]">
+          <h3 className="text-gray-500 text-sm">Revenue</h3>
+          <p className="text-4xl font-semibold mt-3">${stats.totalRevenue}</p>
         </div>
-        <div className="bg-white p-4 rounded-3xl  text-left w-[209px] h-[112px] ">
-          <h3 className="text-gray-500 text-sm ">Reports Pending</h3>
-          <p className="text-4xl font-semibold mt-3">{stats.reportsPending}</p>
+        <div className="bg-white p-4 rounded-3xl text-left w-[209px] h-[112px]">
+          <h3 className="text-gray-500 text-sm">Reports Pending</h3>
+          <p className="text-4xl font-semibold mt-3">{stats.pendingReports}</p>
         </div>
       </div>
 
       {/* Charts */}
-      <div className="bg-white p-4 rounded-xl ">
+      <div className="bg-white p-4 rounded-xl">
         <div className="grid grid-cols-3 md:grid-cols-3 gap-6">
           {/* Line Chart */}
           <div className="bg-[#F9FAFA] rounded-xl p-4 col-span-2">
-            <h3 className="text-lg font-semibold mb-6 ">Revenue by Users</h3>
+            <h3 className="text-lg font-semibold mb-6">Revenue by Users</h3>
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={lineData}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
@@ -151,69 +237,98 @@ const DummyHome = () => {
           </div>
 
           {/* 3D Google Pie Chart */}
-          <div className="bg-[#F9FAFA] p-6 rounded-xl ">
-            <Chart
-              chartType="PieChart"
-              data={pieData}
-              options={pieOptions}
-              width={"100%"}
-              height={"350px"}
-              backgroundColor={"#F9FAFA"}
-            />
+          <div className="bg-[#F9FAFA] p-6 rounded-xl">
+            {revenueData.length > 0 ? (
+              <Chart
+                chartType="PieChart"
+                data={revenueData}
+                options={pieOptions}
+                width={"100%"}
+                height={"350px"}
+                backgroundColor={"#F9FAFA"}
+              />
+            ) : (
+              <p>No revenue data available</p>
+            )}
           </div>
         </div>
       </div>
 
-      {/* Recent Bookings */}
-      <div className="bg-white p-6 rounded-xl  ">
-        <div className="flex justify-between items-center mb-4 ">
+      {/* Recent Subscriptions Table */}
+      <div className="bg-white p-6 rounded-xl">
+        <div className="flex justify-between items-center mb-4">
           <h3 className="text-[24px] font-bold">Recent Subscriptions</h3>
           <button
-      onClick={handleViewAll}
-      className="text-blue-500 text-sm hover:underline"
-    >
-      View All
-    </button>
+            onClick={handleViewAll}
+            className="text-blue-500 text-sm hover:underline"
+          >
+            View All
+          </button>
         </div>
-       <div className="w-full bg-[#F9FAFA] rounded-lg p-4 ">
-  <div className="grid grid-cols-7 text-left text-sm border-b bg-[#DEF5FF] py-4 rounded-lg font-semibold">
-    {/* Table Headers */}
-    <div className="ml-4">#</div>
-    <div className="col-span-1">Date</div>
-    <div className="col-span-1">Transaction ID</div>
-    <div className="col-span-1">Subscriber Name</div>
-    <div className="col-span-1">Subscription Plan</div>
-    <div className="col-span-1">Plan Duration</div>
-    <div className="col-span-1">Amount Piad</div>
-    {/* <div className="col-span-2">Stay Duration</div>
-    <div className="col-span-1">Status</div> */}
-  </div>
+        
+        {/* Subscriptions Table */}
+        <div className="bg-white  rounded-xl overflow-auto">
+          <div className="w-full bg-[#F9FAFA] rounded-lg p-4">
+            {/* Table Headers */}
+            <div className="grid grid-cols-7 text-left text-sm border-b bg-[#DEF5FF] py-4 rounded-lg font-semibold">
+              <div className="ml-4">#</div>
+              <div className="col-span-1">Date</div>
+              <div className="col-span-1">Transaction ID</div>
+              <div className="col-span-1">Subscriber Name</div>
+              <div className="col-span-1">Subscription Plan</div>
+              <div className="col-span-1">Plan Duration</div>
+              <div className="col-span-1">Amount Paid</div>
+            </div>
 
-  <div className="grid gap-y-2">
-    {/* Data Rows */}
-    {Array(6)
-      .fill(bookings[0])
-      .map((booking, idx) => (
-        <div
-          key={idx}
-          className="grid grid-cols-7 items-center border-b py-6"
-        >
-          <div className="ml-4 col-span-1">{idx + 1}</div>
-          <div className="col-span-1">12, Dec 2025</div>
-          <div className="col-span-1">GH478961</div>
-          <div className="col-span-1">Mike Smith</div>
-          <div className="col-span-1">Basic Plan</div>
-          <div className="col-span-1">1 Month</div>
-          <div className="col-span-1">$9784</div>
+            {loading ? (
+              <p className="p-4 text-sm">Loading...</p>
+            ) : error ? (
+              <p className="p-4 text-red-500 text-sm">{error}</p>
+            ) : (
+              <div className="grid gap-y-2">
+                {subscriptions.map((sub, idx) => (
+                  <div
+                    key={sub._id}
+                    className="grid grid-cols-7 items-center border-b py-6 text-sm"
+                  >
+                    <div className="ml-4 col-span-1">
+                      {(currentPage - 1) * 10 + idx + 1}
+                    </div>
+                    <div className="col-span-1">
+                      {moment(sub.createdAt).format("DD, MMM YYYY")}
+                    </div>
+                    <div className="col-span-1">{sub._id.slice(-8).toUpperCase()}</div>
+                    <div className="col-span-1">{sub.user?.name || "N/A"}</div>
+                    <div className="col-span-1">{sub.productId.replace(/_/g, " ")}</div>
+                    <div className="col-span-1">{sub.subscriptionPlan}</div>
+                    <div className="col-span-1">${sub.subscriptionPrice.toFixed(2)}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
 
-          {/* <div className="col-span-1">{booking.userName}</div>
-          <div className="col-span-2">{booking.stayDuration}</div> */}
-          
+          {/* Pagination Controls */}
+          {/* <div className="flex justify-center items-center mt-4">
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="bg-gray-200 text-gray-600 px-4 py-2 mx-2 rounded-md"
+            >
+              Previous
+            </button>
+
+            <span className="text-lg font-semibold">{currentPage} of {totalPages}</span>
+
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="bg-gray-200 text-gray-600 px-4 py-2 mx-2 rounded-md"
+            >
+              Next
+            </button>
+          </div> */}
         </div>
-      ))}
-  </div>
-</div>
-
       </div>
     </div>
   );

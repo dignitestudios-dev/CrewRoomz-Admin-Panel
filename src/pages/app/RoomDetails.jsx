@@ -93,11 +93,11 @@ import axios from "../../axios";
   );
 };
 
-const BookingDetails = () => {
-  const { bookingId } = useParams(); // get ID from URL
+const RoomDetails = () => {
+  const { bookingId } = useParams();
   const navigate = useNavigate();
 
-  const [data, setData] = useState(null);
+  const [roomData, setRoomData] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const handleBack = () => navigate(-1);
@@ -105,10 +105,10 @@ const BookingDetails = () => {
   useEffect(() => {
     const fetchDetails = async () => {
       try {
-        const response = await axios.get(`/admin/booking/${bookingId}`);
-        setData(response.data.data);
+        const response = await axios.get(`/admin/room/${bookingId}`);
+        setRoomData(response.data.data.room); // ✅ extract room
       } catch (error) {
-        console.error("Failed to fetch booking details:", error);
+        console.error("Failed to fetch room details:", error);
       } finally {
         setLoading(false);
       }
@@ -121,32 +121,17 @@ const BookingDetails = () => {
     return <BookingDetailsSkeleton />;
   }
 
-  if (!data) {
-    return <div className="p-6 text-center text-red-500">Failed to load booking details.</div>;
+  if (!roomData) {
+    return <div className="p-6 text-center text-red-500">Failed to load room details.</div>;
   }
-
-  const {
-    bookingStatus,
-    cancellationReason,
-    room,
-    user,
-    bed,
-    startDate,
-    endDate,
-    totalPrice,
-    platformFee,
-    adminCommissionAmount,
-  } = data;
 
   const amenitiesIcons = {
     "Wi-fi": <FaWifi />,
     "Air - Conditioning": <FaSnowflake />,
     "Pool": <FaSwimmingPool />,
     "Breakfast": <FaCoffee />,
-    // Add more if needed
+    // Add more custom icons as needed
   };
-
-
 
   return (
     <div className="p-6 min-h-screen">
@@ -156,33 +141,25 @@ const BookingDetails = () => {
           <button onClick={handleBack} className="pb-1 mr-1 font-bold text-black">
             <FaArrowLeft size={28} />
           </button>
-          <h1 className="text-[36px] text-black mb-2 font-bold">Booking Details</h1>
+          <h1 className="text-[36px] text-black mb-2 font-bold">Property Details</h1>
         </div>
-        <span
-          className={`text-sm font-semibold px-4 py-3 rounded-full ${
-            bookingStatus === "completed"
-              ? "bg-green-500 text-white"
-              : bookingStatus === "pending"
-              ? "bg-yellow-500 text-white"
-              : "bg-[#DC1D00] text-white"
-          }`}
-        >
-          {bookingStatus}
+        <span className="text-sm font-semibold px-6 py-3 rounded-full bg-green-500 text-white capitalize">
+          {roomData.roomStatus}
         </span>
       </div>
 
-      {/* Content */}
+      {/* Main Room Content */}
       <div className="bg-white rounded-2xl p-6">
         <div className="flex flex-col lg:flex-row gap-6 bg-[#F9FAFA] p-6 rounded-2xl">
           {/* Room Images */}
           <div className="w-full lg:w-[503px]">
             <img
-              src={room.media?.[0]}
+              src={roomData.media?.[0]}
               alt="Room"
               className="rounded-xl w-full h-[362px] object-cover"
             />
             <div className="flex gap-2 mt-3">
-              {room.media?.slice(0, 4).map((src, idx) => (
+              {(roomData.media || []).slice(0, 4).map((src, idx) => (
                 <img
                   key={idx}
                   src={src}
@@ -196,13 +173,13 @@ const BookingDetails = () => {
           {/* Room Info */}
           <div className="flex-1">
             <h2 className="text-[32px] font-bold text-gray-800">
-              {room.city}, {room.state}
+              {roomData.city}, {roomData.state}
             </h2>
             <p className="text-gray-600 text-sm flex items-center mt-1">
-              <LocationEdit /> <span className="ml-2">{room.address}</span>
+              <LocationEdit /> <span className="ml-2">{roomData.address}</span>
             </p>
             <a
-              href={`https://maps.google.com/?q=${room.address}`}
+              href={`https://maps.google.com/?q=${roomData.address}`}
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-500 text-sm underline flex mt-1"
@@ -210,9 +187,11 @@ const BookingDetails = () => {
               <LocationEdit className="mr-2" />
               Show on Google Maps
             </a>
+
             <p className="text-sm text-gray-700 mt-2">
-              {bed.length} Bed{bed.length > 1 ? "s" : ""},{" "}
-              {room.privateBath ? "Private Bath" : "Shared Bath"}
+              {roomData.bedDetails?.length || 0} Bed
+              {roomData.bedDetails?.length > 1 ? "s" : ""},{" "}
+              {roomData.privateBath ? "Private Bath" : "Shared Bath"}
             </p>
 
             {/* Amenities */}
@@ -222,12 +201,12 @@ const BookingDetails = () => {
                 <h3 className="text-[#36C0EF] hover:underline cursor-pointer">View all</h3>
               </div>
               <div className="flex gap-4 mt-2 flex-wrap">
-                {room.amenities?.slice(0, 6).map((a, i) => (
+                {(roomData.amenities || []).slice(0, 6).map((a, i) => (
                   <div
                     key={i}
                     className="flex flex-col items-center text-sm text-gray-600 w-[84px] rounded-xl bg-white p-4"
                   >
-                    {amenitiesIcons[a] || <FaWifi />} {/* fallback icon */}
+                    {amenitiesIcons[a] || <FaWifi />}
                     {a}
                   </div>
                 ))}
@@ -237,14 +216,14 @@ const BookingDetails = () => {
             {/* Description */}
             <div className="mt-4">
               <h3 className="font-semibold text-gray-800">Description</h3>
-              <p className="text-[16px] text-gray-600 mt-1">{room.description}</p>
+              <p className="text-[16px] text-gray-600 mt-1">{roomData.description}</p>
             </div>
 
             {/* Rules */}
             <div className="mt-4">
               <h3 className="font-semibold text-gray-800">Rules to Live</h3>
               <a
-                href={room.rulesDocument}
+                href={roomData.rulesDocument}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 mt-1 text-sm text-gray-700 bg-white w-[461px] h-[52px] p-4 rounded-lg"
@@ -256,64 +235,42 @@ const BookingDetails = () => {
         </div>
       </div>
 
-      {/* Bed Type, Host, Guest, and Cancellation */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-6">
+      {/* Bed Type and Host Info */}
+      <div className="bg-white rounded-2xl p-4 mt-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 ">
         {/* Bed Types */}
-        <div className="bg-white rounded-2xl p-6">
+        <div className="bg-[#F9FAFA] rounded-2xl p-4">
           <h3 className="font-semibold text-gray-800 mb-2">Bed Type and Prices</h3>
-          {bed.map((b, i) => (
-            <div key={i} className="flex justify-between bg-[#F9FAFA] p-4 rounded-xl mb-2">
+          {(roomData.bedDetails || []).map((b, i) => (
+            <div key={i} className="flex justify-between bg-white  p-4 rounded-xl mb-2">
               <span className="text-sm text-gray-700 capitalize">{b.type}</span>
               <span className="text-[#24A3FF] font-semibold">${b.price} / night</span>
             </div>
           ))}
         </div>
 
-        {/* Host & Guest */}
-        <div className="bg-white rounded-2xl p-6">
-          <h3 className="font-semibold text-gray-800 mb-4">Host and Guest Details</h3>
-
-          {/* Host */}
-          <div className="bg-[#29ABE20A] p-4 rounded-xl mb-3">
+        {/* Host Info */}
+        <div className="bg-[#F9FAFA] rounded-2xl p-6">
+          <h3 className="font-semibold text-gray-800 mb-4">Host Details</h3>
+          <div className="bg-[#29ABE20A] p-4 rounded-xl">
             <div className="flex items-center gap-4">
               <img
-                src={room.lister?.profilePicture}
+                src={roomData.lister?.profilePicture}
                 alt="Host"
                 className="w-12 h-12 rounded-full"
               />
               <div>
-                <h4 className="font-semibold text-gray-800">{room.lister?.name}</h4>
+                <h4 className="font-semibold text-gray-800">{roomData.lister?.name}</h4>
                 <p className="text-sm text-gray-600">Host</p>
               </div>
             </div>
           </div>
-
-          {/* Guest */}
-          <div className="bg-[#29ABE20A] p-4 rounded-xl">
-            <div className="flex items-center gap-4">
-              <img
-                src={user?.profilePicture}
-                alt="Guest"
-                className="w-12 h-12 rounded-full"
-              />
-              <div>
-                <h4 className="font-semibold text-gray-800">{user?.name}</h4>
-                <p className="text-sm text-gray-600">Guest</p>
-              </div>
-            </div>
-          </div>
         </div>
-
-        {/* Cancellation Reason */}
-        {bookingStatus === "cancelled" && (
-          <div className="bg-white rounded-2xl p-6 col-span-1 lg:col-span-2">
-            <h3 className="font-semibold text-gray-800 mb-2">Cancellation Reason</h3>
-            <p className="text-sm text-gray-600">{cancellationReason || "N/A"}</p>
-          </div>
-        )}
       </div>
+    </div>
     </div>
   );
 };
 
-export default BookingDetails;
+
+export default RoomDetails;

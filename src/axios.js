@@ -3,8 +3,7 @@ import { ErrorToast } from "./components/global/Toaster"; // Import your toaster
 import Cookies from "js-cookie";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 
-export const baseUrl = "http://18.222.22.108/api/v1";
-// export const baseUrl = "https://155e-45-199-187-86.ngrok-free.app";
+export const baseUrl = "https://dev.crewroomz.com";
 
 async function getDeviceFingerprint() {
   const fp = FingerprintJS.load();

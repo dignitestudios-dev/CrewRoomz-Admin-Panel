@@ -33,12 +33,12 @@ const DummyLogin = () => {
     navigate("/auth/forgot-password");
   };
 
-const handleLoginClick  = () => { 
-      navigate("/app/dashboard");
+// const handleLoginClick  = () => { 
+//       navigate("/app/dashboard");
 
-};
+// };
 
- const handleLogin = async () => {
+const handleLogin = async () => {
   // Clear previous error messages
   setEmailError("");
   setPasswordError("");
@@ -65,8 +65,8 @@ const handleLoginClick  = () => {
   setLoading(true); // Start loading
 
   try {
-    // Make login request to API
-    const response = await axios.post("/admin/login", {
+    // Make login request to API (change the endpoint to /adminAuth/signIn)
+    const response = await axios.post("/adminAuth/signIn", {
       email,
       password,
     });
@@ -110,6 +110,7 @@ const handleLoginClick  = () => {
 };
 
 
+
   return (
 <div
   className="w-full h-auto flex flex-col items-center p-6 backdrop-blur-lg md:w-[630px] md:h-[636px] rounded-[19px] bg-cover bg-center"
@@ -142,7 +143,7 @@ const handleLoginClick  = () => {
         </div>
 
         <div className="w-full h-auto flex flex-col justify-start items-start gap-1">
-                              <h1 className="text-white text-[16px]">Password</h1>
+        <h1 className="text-white text-[16px]">Password</h1>
 
           <div className="h-[49px] flex justify-start bg-[#F8F8F899]/50 items-start w-full relative border-2 border-[#36C0EF] rounded-[8px]">
 
@@ -179,7 +180,7 @@ const handleLoginClick  = () => {
 
         <button
           type="button"
-          onClick={handleLoginClick}
+          onClick={handleLogin}
           className="w-full h-[49px] rounded-[8px] bg-[#0893F0] text-white flex gap-2 items-center justify-center text-md font-medium"
           disabled={loading} // Disable button when loading
         >

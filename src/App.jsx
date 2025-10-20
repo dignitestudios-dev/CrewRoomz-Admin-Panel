@@ -5,13 +5,8 @@ import AuthLayout from "./layouts/AuthLayout";
 
 // App Pages
 import DummyHome from "./pages/app/DummyHome";
-import Inventory from "./pages/app/Inventory";
-import Users from "./pages/app/Users";
-import Reservations from "./pages/app/Bookings";
-import CreateUser from "./pages/app/CreateUser";
+import Users from "./pages/app/Users"
 import Notifications from "./pages/app/Notifications";
-import ReservationDetails from "./pages/app/ReservationDetails";
-import ReservationCompleted from "./pages/app/ReservationCompleted";
 import UserDetails from "./pages/app/UserDetails";
 
 // Auth Pages
@@ -32,6 +27,7 @@ import TermsandConditions from "./pages/app/TermsandConditions";
 import BookingDetailsUpcoming from "./pages/app/BookingDetailsUpcoming";
 import ListerDetails from "./pages/app/ListerDetails";
 import RecentSubscription from "./pages/app/RecentSubscription";
+import RoomDetails from "./pages/app/RoomDetails";
 
 function App() {
   return (
@@ -40,13 +36,9 @@ function App() {
       <Route element={<ProtectedRoutes />}>
         <Route path="app" element={<DashboardLayout />}>
           {/* <Route path="dashboard" element={<DummyHome />} /> */}
-          <Route path="inventory" element={<Inventory />} />
           {/* <Route path="users" element={<Users />} /> */}
           {/* <Route path="user-details" element={<UserDetails />} /> */}
-          <Route path="create-user" element={<CreateUser />} />
-          <Route path="reservations" element={<Reservations />} />
-          <Route path="reservation-details" element={<ReservationDetails />} />
-          <Route path="reservation-completed" element={<ReservationCompleted />} />
+        
         </Route>
       </Route>
 
@@ -66,10 +58,11 @@ function App() {
         <Route path="reported-issues" element={<ReportedIssues />} />
         <Route path="transactions" element={<Transactions />} />
         <Route path="notifications" element={<Notifications />} />
-        <Route path="bookingdetails" element={<BookingDetails />} />
-        <Route path="bookingdetailsupcoming" element={<BookingDetailsUpcoming />} />
-        <Route path="user-details" element={<UserDetails />} />
-        <Route path="lister-details" element={<ListerDetails />} />
+        <Route path="bookingdetails/:bookingId" element={<BookingDetails />} />
+        <Route path="roomdetails/:bookingId" element={<RoomDetails />} />
+        <Route path="bookingdetailsupcoming/:bookingId" element={<BookingDetailsUpcoming />} />
+        <Route path="user-details/:userId" element={<UserDetails />} />
+        <Route path="lister-details/:userId" element={<ListerDetails />} />
         <Route path="recent-subscription" element={<RecentSubscription />} />
 
 
