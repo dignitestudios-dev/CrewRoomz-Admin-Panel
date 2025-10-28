@@ -1,23 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import { LocationEdit } from "lucide-react";
-import {
-  BsFilePdf,
-} from "react-icons/bs";
-import {
-  FaWifi,
-  FaSnowflake,
-  FaSwimmingPool,
-  FaCoffee,
-} from "react-icons/fa";
-import { FaArrowLeft } from "react-icons/fa";
+import { BsFilePdf } from "react-icons/bs";
+import { FaWifi, FaSnowflake, FaSwimmingPool, FaCoffee, FaArrowLeft } from "react-icons/fa";
 import axios from "../../axios";
 
-
-
-
- 
-  const BookingDetailsSkeleton = () => {
+const BookingDetailsSkeleton = () => {
   return (
     <div className="p-6 min-h-screen animate-pulse">
       {/* Header */}
@@ -36,9 +24,11 @@ import axios from "../../axios";
           <div className="w-full lg:w-[503px]">
             <div className="w-full h-[362px] bg-gray-300 rounded-xl" />
             <div className="flex gap-2 mt-3">
-              {Array(4).fill(0).map((_, i) => (
-                <div key={i} className="w-[120px] h-[80px] bg-gray-300 rounded-lg" />
-              ))}
+              {Array(4)
+                .fill(0)
+                .map((_, i) => (
+                  <div key={i} className="w-[120px] h-[80px] bg-gray-300 rounded-lg" />
+                ))}
             </div>
           </div>
 
@@ -48,24 +38,23 @@ import axios from "../../axios";
             <div className="h-4 w-1/2 bg-gray-300 rounded-md" />
             <div className="h-4 w-40 bg-gray-300 rounded-md" />
 
-            {/* Amenities */}
             <div className="space-y-2 mt-4">
               <div className="h-4 w-24 bg-gray-300 rounded-md" />
               <div className="flex gap-4 flex-wrap">
-                {Array(5).fill(0).map((_, i) => (
-                  <div key={i} className="w-[84px] h-[72px] bg-gray-200 rounded-xl" />
-                ))}
+                {Array(5)
+                  .fill(0)
+                  .map((_, i) => (
+                    <div key={i} className="w-[84px] h-[72px] bg-gray-200 rounded-xl" />
+                  ))}
               </div>
             </div>
 
-            {/* Description */}
             <div className="space-y-2 mt-4">
               <div className="h-4 w-32 bg-gray-300 rounded-md" />
               <div className="h-4 w-full bg-gray-200 rounded-md" />
               <div className="h-4 w-5/6 bg-gray-200 rounded-md" />
             </div>
 
-            {/* Rules */}
             <div className="space-y-2 mt-4">
               <div className="h-4 w-24 bg-gray-300 rounded-md" />
               <div className="w-[461px] h-[52px] bg-gray-200 rounded-lg" />
@@ -78,9 +67,11 @@ import axios from "../../axios";
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-6">
         <div className="bg-white rounded-2xl p-6 space-y-3">
           <div className="h-4 w-48 bg-gray-300 rounded-md" />
-          {Array(2).fill(0).map((_, i) => (
-            <div key={i} className="h-12 bg-gray-200 rounded-xl" />
-          ))}
+          {Array(2)
+            .fill(0)
+            .map((_, i) => (
+              <div key={i} className="h-12 bg-gray-200 rounded-xl" />
+            ))}
         </div>
 
         <div className="bg-white rounded-2xl p-6 space-y-3">
@@ -92,6 +83,71 @@ import axios from "../../axios";
     </div>
   );
 };
+
+// ✅ Review Section Component
+const ReviewSection = ({ reviews }) => {
+  // Check if there are reviews
+  const totalReviews = reviews?.totalReviews || 0;
+  const averageRating = reviews?.averageRating || 0;
+  const ratingDistribution = reviews?.ratingDistribution || {};
+
+  return (
+    <div className="mt-6">
+      <div className="bg-[#F9FAFA] rounded-2xl p-6">
+        <div className="flex justify-between items-center mb-3">
+          <h3 className="font-semibold text-gray-800 text-[16px]">
+            Review <span className="text-gray-500 text-sm">({totalReviews})</span>
+          </h3>
+          {totalReviews > 0 && (
+            <button className="text-[#24A3FF] text-sm font-medium hover:underline">
+              View all
+            </button>
+          )}
+        </div>
+
+        {/* Star Rating */}
+        {totalReviews > 0 ? (
+          <div className="flex items-center gap-1 mb-2">
+            {Array(5)
+              .fill(0)
+              .map((_, i) => (
+                <span
+                  key={i}
+                  className={`text-xl ${i < averageRating ? "text-yellow-400" : "text-gray-300"}`}
+                >
+                  ★
+                </span>
+              ))}
+            <span className="text-gray-600 ml-2 text-sm">{averageRating}</span>
+          </div>
+        ) : (
+          <p className="text-sm text-gray-600">No reviews yet</p>
+        )}
+
+        {/* Rating Distribution */}
+        {totalReviews > 0 && (
+          <div className="space-y-2">
+            {Object.entries(ratingDistribution)
+              .sort(([a], [b]) => b - a)
+              .map(([stars, count]) => (
+                <div key={stars} className="flex items-center gap-2 text-sm">
+                  <span className="w-[50px] text-gray-600">{stars} stars</span>
+                  <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+                    <div
+                      className="bg-yellow-400 h-full rounded-full"
+                      style={{ width: `${(count / totalReviews) * 100}%` }}
+                    />
+                  </div>
+                  <span className="text-gray-600 w-6 text-right">{count}</span>
+                </div>
+              ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
 
 const RoomDetails = () => {
   const { bookingId } = useParams();
@@ -106,7 +162,7 @@ const RoomDetails = () => {
     const fetchDetails = async () => {
       try {
         const response = await axios.get(`/admin/room/${bookingId}`);
-        setRoomData(response.data.data.room); // ✅ extract room
+        setRoomData(response.data.data.room);
       } catch (error) {
         console.error("Failed to fetch room details:", error);
       } finally {
@@ -130,7 +186,6 @@ const RoomDetails = () => {
     "Air - Conditioning": <FaSnowflake />,
     "Pool": <FaSwimmingPool />,
     "Breakfast": <FaCoffee />,
-    // Add more custom icons as needed
   };
 
   return (
@@ -221,7 +276,7 @@ const RoomDetails = () => {
 
             {/* Rules */}
             <div className="mt-4">
-              <h3 className="font-semibold text-gray-800">Rules to Live</h3>
+              <h3 className="font-semibold text-gray-800">Rules to Stay</h3>
               <a
                 href={roomData.rulesDocument}
                 target="_blank"
@@ -237,40 +292,43 @@ const RoomDetails = () => {
 
       {/* Bed Type and Host Info */}
       <div className="bg-white rounded-2xl p-4 mt-6">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 ">
-        {/* Bed Types */}
-        <div className="bg-[#F9FAFA] rounded-2xl p-4">
-          <h3 className="font-semibold text-gray-800 mb-2">Bed Type and Prices</h3>
-          {(roomData.bedDetails || []).map((b, i) => (
-            <div key={i} className="flex justify-between bg-white  p-4 rounded-xl mb-2">
-              <span className="text-sm text-gray-700 capitalize">{b.type}</span>
-              <span className="text-[#24A3FF] font-semibold">${b.price} / night</span>
-            </div>
-          ))}
-        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {/* Bed Types */}
+          <div className="bg-[#F9FAFA] rounded-2xl p-4">
+            <h3 className="font-semibold text-gray-800 mb-2">Bed Type and Prices</h3>
+            {(roomData.bedDetails || []).map((b, i) => (
+              <div key={i} className="flex justify-between bg-white p-4 rounded-xl mb-2">
+                <span className="text-sm text-gray-700 capitalize">{b.type}</span>
+                <span className="text-[#24A3FF] font-semibold">${b.price} / night</span>
+              </div>
+            ))}
+          </div>
 
-        {/* Host Info */}
-        <div className="bg-[#F9FAFA] rounded-2xl p-6">
-          <h3 className="font-semibold text-gray-800 mb-4">Host Details</h3>
-          <div className="bg-[#29ABE20A] p-4 rounded-xl">
-            <div className="flex items-center gap-4">
-              <img
-                src={roomData.lister?.profilePicture}
-                alt="Host"
-                className="w-12 h-12 rounded-full"
-              />
-              <div>
-                <h4 className="font-semibold text-gray-800">{roomData.lister?.name}</h4>
-                <p className="text-sm text-gray-600">Host</p>
+          {/* Host Info */}
+          <div className="bg-[#F9FAFA] rounded-2xl p-6">
+            <h3 className="font-semibold text-gray-800 mb-4">Host Details</h3>
+            <div className="bg-[#29ABE20A] p-4 rounded-xl">
+              <div className="flex items-center gap-4">
+                <img
+                  src={roomData.lister?.profilePicture}
+                  alt="Host"
+                  className="w-12 h-12 rounded-full"
+                />
+                <div>
+                  <h4 className="font-semibold text-gray-800">{roomData.lister?.name}</h4>
+                  <p className="text-sm text-gray-600">Host</p>
+                </div>
               </div>
             </div>
           </div>
         </div>
+              <ReviewSection reviews={roomData.reviews} />
+
       </div>
-    </div>
+
+      {/* ✅ Review Section */}
     </div>
   );
 };
-
 
 export default RoomDetails;

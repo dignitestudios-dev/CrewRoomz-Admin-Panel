@@ -14,9 +14,12 @@ import login from "./login.png"
 import background from "./background.png"
 import calendar from "./calendar.png"
 import warning from "./warning.png"
-
+import ac from "./ac.png"
+import wifi from "./wifi.png"
+import pool from "./pool.png"
+import breakfast from "./breakfast.png"
 // export {
 //     FILENAME(PASCALCASE)
 // }
 
-export { Logo, NoInternetImage, audi, hyundai, van, loginbg, sidebar,login,background,calendar,warning };
+export { Logo, NoInternetImage, audi, hyundai, van, loginbg, sidebar,login,background,calendar,warning,ac,wifi,pool,breakfast };

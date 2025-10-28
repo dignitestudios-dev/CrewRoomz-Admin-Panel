@@ -4,6 +4,7 @@ import { IoCalendarOutline } from "react-icons/io5";
 import { useNavigate, useParams, useLocation } from "react-router";
 import axios from "../../axios";
 import { ErrorToast } from "../../components/global/Toaster";
+import { warning } from "../../assets/export";
 
 const UserDetails = () => {
   const { userId } = useParams(); 
@@ -17,6 +18,16 @@ const UserDetails = () => {
   const [bookings, setBookings] = useState([]);
   const [pagination, setPagination] = useState({});
   const [loading, setLoading] = useState(false);
+  const [isDeactivateModalOpen, setIsDeactivateModalOpen] = useState(false);
+
+
+  const openDeactivateModal = () => {
+    setIsDeactivateModalOpen(true);
+  };
+
+  const closeDeactivateModal = () => {
+    setIsDeactivateModalOpen(false);
+  };
 
   const handleBack = () => {
     navigate(-1);
@@ -105,7 +116,8 @@ const UserDetails = () => {
             <p className="text-gray-500">{stateEmail || user?.email || "-"}</p>
           </div>
         </div>
-        <button className="bg-[#DC1D00] text-white px-6 py-4 rounded-full font-medium hover:bg-red-700 mt-4 md:mt-0">
+        <button  onClick={openDeactivateModal}
+ className="bg-[#DC1D00] text-white px-6 py-4 rounded-full font-medium hover:bg-red-700 mt-4 md:mt-0">
           Deactivate
         </button>
       </div>
@@ -209,6 +221,38 @@ const UserDetails = () => {
 
         </div>
       </div>
+
+      {/* Deactivate Modal */}
+            {isDeactivateModalOpen && (
+              <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
+                <div className="bg-white p-6 rounded-lg shadow-lg w-[471px] h-[347px] flex flex-col items-center">
+                  <img
+                    src={warning}
+                    alt="Warning"
+                    className="w-[107px] h-[107px] mb-4"
+                  />
+                  <h2 className="text-[24px] font-bold mt-2 mb-4">Deactivate</h2>
+                  <p className="text-center text-[16px] text-gray-700 mb-6">
+                    Are you sure you want to deactivate this account?
+                  </p>
+      
+                  <div className="mt-4 flex justify-end w-full">
+                    <button
+                      onClick={closeDeactivateModal}
+                      className="px-4 py-4 bg-gray-300 w-[50%] rounded-lg mr-2"
+                    >
+                      No
+                    </button>
+                    <button
+                      onClick={closeDeactivateModal}
+                      className="px-4 py-4 button-bg w-[50%] text-white rounded-lg"
+                    >
+                      Yes
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
     </div>
   );
 };

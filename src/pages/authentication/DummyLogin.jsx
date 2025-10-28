@@ -159,7 +159,7 @@ const handleLogin = async () => {
             <button
               type="button"
               onClick={togglePasswordVisibility}
-              className="w-[10%] h-full rounded-r-[8px] bg-transparent text-md text-[#959393] flex items-center justify-center"
+              className="w-[10%] h-full rounded-r-[8px] bg-transparent text-md text-white flex items-center justify-center"
             >
               {showPassword ? <FaRegEye /> : <FaRegEyeSlash />}
             </button>

@@ -40,6 +40,8 @@ const DummyHome = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [revenueData, setRevenueData] = useState([]);
+  const [monthlyRevenueData, setMonthlyRevenueData] = useState([]);
+
 
   // Fetch Stats
    useEffect(() => {
@@ -136,9 +138,36 @@ const DummyHome = () => {
     fetchRevenueData();
   }, []);
 
+
+
+  useEffect(() => {
+  const fetchMonthlyRevenue = async () => {
+    try {
+      const response = await axios.get("/admin/monthlyRevenue");
+      if (response.data.success) {
+        const formattedData = response.data.data.map((item) => ({
+          month: item.month,
+          revenue: item.revenue,
+        }));
+        setMonthlyRevenueData(formattedData);
+      } else {
+        setError("Failed to load monthly revenue data");
+      }
+    } catch (err) {
+      console.error("Error fetching monthly revenue:", err);
+      setError("An error occurred while fetching the monthly revenue data");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchMonthlyRevenue();
+}, []);
+
+
   // Pie chart options
   const pieOptions = {
-    title: "Revenue by Subscription Plan",
+    title: "Revenue by Subscription",
     titleTextStyle: {
       alignment: "start",
       fontSize: 18,
@@ -200,7 +229,7 @@ const DummyHome = () => {
           <p className="text-4xl font-semibold mt-3">{stats.totalListings}</p>
         </div>
         <div className="bg-white p-4 rounded-3xl text-left w-[209px] h-[112px]">
-          <h3 className="text-gray-500 text-sm">Active Users</h3>
+          <h3 className="text-gray-500 text-[13px]">Active Users(Listers + Users)</h3>
           <p className="text-4xl font-semibold mt-3">{stats.totalActiveUsers}</p>
         </div>
         <div className="bg-white p-4 rounded-3xl text-left w-[209px] h-[112px]">
@@ -212,7 +241,7 @@ const DummyHome = () => {
           <p className="text-4xl font-semibold mt-3">${stats.totalRevenue}</p>
         </div>
         <div className="bg-white p-4 rounded-3xl text-left w-[209px] h-[112px]">
-          <h3 className="text-gray-500 text-sm">Reports Pending</h3>
+          <h3 className="text-gray-500 text-sm">Reports Pending Review</h3>
           <p className="text-4xl font-semibold mt-3">{stats.pendingReports}</p>
         </div>
       </div>
@@ -223,17 +252,16 @@ const DummyHome = () => {
           {/* Line Chart */}
           <div className="bg-[#F9FAFA] rounded-xl p-4 col-span-2">
             <h3 className="text-lg font-semibold mb-6">Revenue by Users</h3>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={lineData}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
-                <XAxis dataKey="name" stroke="#6B7280" />
-                <YAxis stroke="#6B7280" />
-                <Tooltip />
-                <Legend />
-                <Line type="monotone" dataKey="Users" stroke="#FF7B17" strokeWidth={3} />
-                <Line type="monotone" dataKey="Listers" stroke="#0088FE" strokeWidth={3} />
-              </LineChart>
-            </ResponsiveContainer>
+  <ResponsiveContainer width="100%" height={300}>
+    <LineChart data={monthlyRevenueData}>
+      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+      <XAxis dataKey="month" stroke="#6B7280" />
+      <YAxis stroke="#6B7280" />
+      <Tooltip />
+      <Legend />
+      <Line type="monotone" dataKey="revenue" stroke="#FF7B17" strokeWidth={3} />
+    </LineChart>
+  </ResponsiveContainer>
           </div>
 
           {/* 3D Google Pie Chart */}

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router";
 import axios from "../../axios";
 
 const Bookings = () => {
-  const [activeTab, setActiveTab] = useState("private");
+  const [activeTab, setActiveTab] = useState("multi");
   const [page, setPage] = useState(1);
   const [bookingStatus, setBookingStatus] = useState("completed");
   const [bookings, setBookings] = useState([]);
@@ -63,7 +63,7 @@ const Bookings = () => {
       <div className="flex justify-between flex-wrap gap-4 items-center mb-4">
         {/* Tabs */}
         <div className="flex bg-white rounded-lg w-full md:w-[464px] p-1">
-          {["private", "multi", "semiprivate"].map((type) => (
+          {["multi", "semiprivate" ,"private"].map((type) => (
             <button
               key={type}
               onClick={() => handleTabChange(type)}

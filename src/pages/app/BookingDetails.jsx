@@ -12,6 +12,8 @@ import {
 } from "react-icons/fa";
 import { FaArrowLeft } from "react-icons/fa";
 import axios from "../../axios";
+import { CiLocationOn } from "react-icons/ci";
+import {ac, wifi, pool,breakfast} from "../../assets/export";
 
 
 
@@ -138,12 +140,16 @@ const BookingDetails = () => {
     adminCommissionAmount,
   } = data;
 
-  const amenitiesIcons = {
-    "Wi-fi": <FaWifi />,
-    "Air - Conditioning": <FaSnowflake />,
-    "Pool": <FaSwimmingPool />,
-    "Breakfast": <FaCoffee />,
-    // Add more if needed
+ const amenitiesIcons = {
+    // "Wi-fi": <FaWifi />,
+    // "Air - Conditioning": <FaSnowflake />,
+    // "Pool": <FaSwimmingPool />,
+    // "Breakfast": <FaCoffee />,
+    "AC": <img src={ac} alt="Air Conditioning" className="w-6 h-6" />,
+    "Wi-fi": <img src={wifi} alt="Wi-Fi" className="w-6 h-6" />,
+    "Pool": <img src={pool} alt="Swimming Pool" className="w-6 h-6" />,
+    "Breakfast": <img src={breakfast} alt="Breakfast" className="w-6 h-6" />,
+    // Add more amenities and their respective icons here
   };
 
 
@@ -207,7 +213,7 @@ const BookingDetails = () => {
               rel="noopener noreferrer"
               className="text-blue-500 text-sm underline flex mt-1"
             >
-              <LocationEdit className="mr-2" />
+              <CiLocationOn  className="mr-2 text-xl" />
               Show on Google Maps
             </a>
             <p className="text-sm text-gray-700 mt-2">
@@ -217,22 +223,43 @@ const BookingDetails = () => {
 
             {/* Amenities */}
             <div className="mt-4">
-              <div className="flex justify-between items-center">
-                <h3 className="font-semibold text-gray-800 text-[16px]">Amenities</h3>
-                <h3 className="text-[#36C0EF] hover:underline cursor-pointer">View all</h3>
-              </div>
-              <div className="flex gap-4 mt-2 flex-wrap">
-                {room.amenities?.slice(0, 6).map((a, i) => (
-                  <div
-                    key={i}
-                    className="flex flex-col items-center text-sm text-gray-600 w-[84px] rounded-xl bg-white p-4"
-                  >
-                    {amenitiesIcons[a] || <FaWifi />} {/* fallback icon */}
-                    {a}
-                  </div>
-                ))}
-              </div>
-            </div>
+  <div className="flex justify-between items-center">
+    <h3 className="font-semibold text-gray-800 text-[16px]">Amenities</h3>
+    <h3 className="text-[#36C0EF] hover:underline cursor-pointer">View all</h3>
+  </div>
+  <div className="flex gap-4 mt-2 flex-wrap">
+    {room.amenities?.slice(0, 6).map((a, i) => {
+      // Map the amenity to its icon
+      const getAmenityIcon = (amenity) => {
+        switch (amenity) {
+          case "Wifi":
+            return <img src={wifi} alt="Wifi" className="w-6 h-6" />;
+          case "Heating":
+            return <img src={ac} alt="Air Conditioning" className="w-6 h-6" />;
+          case "Pool":
+            return <img src={pool} alt="Pool" className="w-6 h-6" />;
+          case "Breakfast":
+            return <img src={breakfast} alt="Breakfast" className="w-6 h-6" />;
+          default:
+            return <img src={wifi} alt="Wifi" className="w-6 h-6" />; // Default icon in case the amenity is not recognized
+        }
+      };
+
+      return (
+        <div
+          key={i}
+          className="flex flex-col items-center text-sm text-gray-600 w-[84px] rounded-xl bg-white p-4"
+        >
+          <div className="flex justify-center text-2xl text-[#36C0EF]">
+            {getAmenityIcon(a)}
+          </div>
+          <p className="text-center overflow-hidden text-ellipsis whitespace-nowrap">{a}</p>
+        </div>
+      );
+    })}
+  </div>
+</div>
+
 
             {/* Description */}
             <div className="mt-4">
@@ -242,7 +269,7 @@ const BookingDetails = () => {
 
             {/* Rules */}
             <div className="mt-4">
-              <h3 className="font-semibold text-gray-800">Rules to Live</h3>
+              <h3 className="font-semibold text-gray-800">Rules to Stay</h3>
               <a
                 href={room.rulesDocument}
                 target="_blank"
@@ -257,61 +284,140 @@ const BookingDetails = () => {
       </div>
 
       {/* Bed Type, Host, Guest, and Cancellation */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-6">
-        {/* Bed Types */}
-        <div className="bg-white rounded-2xl p-6">
-          <h3 className="font-semibold text-gray-800 mb-2">Bed Type and Prices</h3>
-          {bed.map((b, i) => (
-            <div key={i} className="flex justify-between bg-[#F9FAFA] p-4 rounded-xl mb-2">
-              <span className="text-sm text-gray-700 capitalize">{b.type}</span>
-              <span className="text-[#24A3FF] font-semibold">${b.price} / night</span>
-            </div>
-          ))}
+     {/* Bed Type, Host, Guest, and Booking Summary Section */}
+<div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+  {/* Left Column */}
+  <div className="space-y-6">
+    {/* Bed Type and Prices */}
+   <div className="bg-white rounded-2xl p-6">
+  <h3 className="font-semibold text-gray-800 mb-4">Bed Type And Prices</h3>
+  {bed.map((b, i) => (
+    <div key={i} className="mb-3">
+      {/* Display Bed Type above the blue container */}
+      <p className="text-gray-700 font-medium mb-2">{b.type}</p>
+      
+      <div className="flex items-center justify-between bg-[#36C0EF] p-4 rounded-2xl">
+        <span className="bg-[#36C0EF] text-white text-sm font-semibold px-4 py-2 rounded-lg">
+          Daily
+        </span>
+        <div className="flex items-center gap-4">
+          <span className="text-white font-semibold">${b.price}</span>
         </div>
-
-        {/* Host & Guest */}
-        <div className="bg-white rounded-2xl p-6">
-          <h3 className="font-semibold text-gray-800 mb-4">Host and Guest Details</h3>
-
-          {/* Host */}
-          <div className="bg-[#29ABE20A] p-4 rounded-xl mb-3">
-            <div className="flex items-center gap-4">
-              <img
-                src={room.lister?.profilePicture}
-                alt="Host"
-                className="w-12 h-12 rounded-full"
-              />
-              <div>
-                <h4 className="font-semibold text-gray-800">{room.lister?.name}</h4>
-                <p className="text-sm text-gray-600">Host</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Guest */}
-          <div className="bg-[#29ABE20A] p-4 rounded-xl">
-            <div className="flex items-center gap-4">
-              <img
-                src={user?.profilePicture}
-                alt="Guest"
-                className="w-12 h-12 rounded-full"
-              />
-              <div>
-                <h4 className="font-semibold text-gray-800">{user?.name}</h4>
-                <p className="text-sm text-gray-600">Guest</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Cancellation Reason */}
-        {bookingStatus === "cancelled" && (
-          <div className="bg-white rounded-2xl p-6 col-span-1 lg:col-span-2">
-            <h3 className="font-semibold text-gray-800 mb-2">Cancellation Reason</h3>
-            <p className="text-sm text-gray-600">{cancellationReason || "N/A"}</p>
-          </div>
-        )}
       </div>
+    </div>
+  ))}
+</div>
+
+
+    {/* Host and Guest Details */}
+    <div className="bg-white rounded-2xl p-6">
+      <h3 className="font-semibold text-gray-800 mb-4">Host and Guest Details</h3>
+
+      {/* Host */}
+      <div className="flex items-center justify-between bg-[#F9FAFA] p-4 rounded-xl mb-3">
+        <div className="flex items-center gap-3">
+          <img
+            src={room.lister?.profilePicture}
+            alt="Host"
+            className="w-12 h-12 rounded-full object-cover"
+          />
+          <div>
+            <p className="font-semibold text-gray-800">{room.lister?.name}</p>
+            <p className="text-sm text-gray-600">Host</p>
+          </div>
+        </div>
+        <button className="bg-[#E5F6FD] text-[#36C0EF] p-2 rounded-full">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="w-5 h-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
+
+      {/* Guest */}
+      <div className="flex items-center justify-between bg-[#F9FAFA] p-4 rounded-xl">
+        <div className="flex items-center gap-3">
+          <img
+            src={user?.profilePicture}
+            alt="Guest"
+            className="w-12 h-12 rounded-full object-cover"
+          />
+          <div>
+            <p className="font-semibold text-gray-800">{user?.name}</p>
+            <p className="text-sm text-gray-600">Guest</p>
+          </div>
+        </div>
+        <button className="bg-[#E5F6FD] text-[#36C0EF] p-2 rounded-full">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="w-5 h-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  {/* Right Column - Booking Details */}
+  <div className="bg-white rounded-2xl p-6">
+      <h3 className="font-semibold text-gray-800 mb-4">Booking Details</h3>
+
+    <div className="border-b border-gray-200 mb-4 flex gap-6">
+      <button className="text-[#36C0EF]  border-b-2 border-[#36C0EF] pb-2">
+        Summary
+      </button>
+      <button className="text-gray-400  pb-2 hover:text-[#36C0EF]">
+        Billing Details
+      </button>
+    </div>
+
+    {/* Booking Summary */}
+    <div className="space-y-3 text-sm text-gray-700">
+      <div className="flex justify-between">
+        <p className=" text-gray-600">Booking ID:</p>
+        <p className="font-semibold text-gray-800">{data._id}</p>
+      </div>
+      <div className="flex justify-between">
+        <p className=" text-gray-600">Bed Type:</p>
+        <p>{bed[0]?.type || "N/A"}</p>
+      </div>
+      <div className="flex justify-between">
+        <p className=" text-gray-600">Booking Type:</p>
+        <p>{data.bookingType || "N/A"}</p>
+      </div>
+      <div className="flex justify-between">
+        <p className=" text-gray-600">Price:</p>
+        <p>${totalPrice}</p>
+      </div>
+      <div className="flex justify-between">
+        <p className=" text-gray-600">Stay Duration:</p>
+        <p>
+          {new Date(startDate).toLocaleDateString("en-US", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+          })}{" "}
+          -{" "}
+          {new Date(endDate).toLocaleDateString("en-US", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+          })}
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
     </div>
   );
 };
