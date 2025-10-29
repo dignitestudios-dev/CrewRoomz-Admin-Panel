@@ -9,6 +9,8 @@
     const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(1);
     const navigate = useNavigate();
+    const [searchTerm, setSearchTerm] = useState("");
+
 
     const UserShimmerRow = () => (
       <div className="grid grid-cols-10 border-b last:border-none animate-pulse">
@@ -41,34 +43,39 @@
     );
 
     // Fetch users from API
-    const fetchUsers = async (role = "lister", pageNumber = 1) => {
-      setLoading(true);
-      try {
-        const response = await axios.get(`/admin/users`, {
-          params: { role, page: pageNumber },
-        });
+   const fetchUsers = async (role = "lister", pageNumber = 1, search = "") => {
+  setLoading(true);
+  try {
+    const response = await axios.get(`/admin/users`, {
+      params: { role, page: pageNumber, search }, // 👈 include search param
+    });
 
-        if (response.data.success) {
-          setUsers(response.data.data.users);
-        } else {
-          ErrorToast(response.data.message || "Failed to fetch users");
-        }
-      } catch (error) {
-        console.error("Fetch users error:", error);
-        ErrorToast("Error fetching users. Please try again.");
-      } finally {
-        setLoading(false);
-      }
-    };
+    if (response.data.success) {
+      setUsers(response.data.data.users);
+    } else {
+      ErrorToast(response.data.message || "Failed to fetch users");
+    }
+  } catch (error) {
+    console.error("Fetch users error:", error);
+    ErrorToast("Error fetching users. Please try again.");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
     // Fetch users when component mounts or activeTab/page changes
     useEffect(() => {
-      if (activeTab === "listers") {
-        fetchUsers("lister", page);
-      } else if (activeTab === "users") {
-        fetchUsers("user", page); // Assuming "user" role for the other tab, adjust if needed
-      }
-    }, [activeTab, page]);
+  const delayDebounce = setTimeout(() => {
+    if (activeTab === "listers") {
+      fetchUsers("lister", page, searchTerm);
+    } else if (activeTab === "users") {
+      fetchUsers("user", page, searchTerm);
+    }
+  }, 500); // debounce for smoother searching
+
+  return () => clearTimeout(delayDebounce);
+}, [activeTab, page, searchTerm]);
 
    const handleRowClick = (user) => {
   const { _id, name, email, profilePicture } = user;
@@ -115,6 +122,18 @@
             </button>
           </div>
         </div>
+
+        {/* Search Bar */}
+<div className="flex justify-between items-center mb-4">
+  <input
+    type="text"
+    value={searchTerm}
+    onChange={(e) => setSearchTerm(e.target.value)}
+    placeholder="Search by name or email..."
+    className="w-full md:w-[350px] px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-400"
+  />
+</div>
+
 
         {/* Table */}
         <div className="bg-white rounded-2xl p-4">
@@ -192,7 +211,7 @@
         </div>
 
         {/* Pagination Controls (optional) */}
-        <div className="flex justify-center mt-6 gap-4">
+        <div className="flex justify-end mt-6 gap-2">
           <button
             onClick={() => setPage((p) => Math.max(p - 1, 1))}
             disabled={page === 1}
@@ -203,7 +222,7 @@
           <span className="px-4 py-2">Page {page}</span>
           <button
             onClick={() => setPage((p) => p + 1)}
-            className="px-4 py-2 rounded bg-gray-300"
+            className="px-4 py-2 rounded bg-blue-500 text-white"
           >
             Next
           </button>

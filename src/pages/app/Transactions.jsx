@@ -45,6 +45,18 @@ const Transactions = () => {
     }
   };
 
+
+   const ShimmerRow = () => (
+    <div className="grid grid-cols-6 border-b last:border-none animate-pulse gap-4 space-y-4">
+      <div className="py-4 px-4 bg-gray-300 h-4 rounded mt-4"></div>
+      <div className="py-4 px-4 bg-gray-300 h-4 rounded"></div>
+      <div className="py-4 px-4 col-span-2 bg-gray-300 h-4 rounded"></div>
+      <div className="py-4 px-4 bg-gray-300 h-4 rounded"></div>
+      <div className="py-4 px-4 bg-gray-300 h-4 rounded"></div>
+    
+    </div>
+  );
+
   return (
     <div className="p-6 pt-2 min-h-screen">
       <h1 className="text-[36px] font-extrabold text-black mb-4 mt-4">
@@ -52,7 +64,7 @@ const Transactions = () => {
       </h1>
 
       {/* Tabs */}
-      <div className="flex bg-white rounded-lg w-72 p-1 mb-4">
+      {/* <div className="flex bg-white rounded-lg w-72 p-1 mb-4">
         <button
           onClick={() => setActiveTab("bookings")}
           className={`px-8 py-2 rounded-lg font-medium ${
@@ -73,10 +85,10 @@ const Transactions = () => {
         >
           Subscriptions
         </button>
-      </div>
+      </div> */}
 
       {/* Bookings Filter Buttons */}
-      {activeTab === "bookings" && (
+      {/* {activeTab === "bookings" && (
         <div className="flex gap-2 mb-4">
           <button
             onClick={() => setActiveFilter("received")}
@@ -99,11 +111,11 @@ const Transactions = () => {
             Refund
           </button>
         </div>
-      )}
+      )} */}
 
       {/* Bookings Table */}
       {activeTab === "bookings" && (
-        <div className="bg-white rounded-2xl shadow p-4">
+        <div className="bg-white rounded-2xl p-4">
           <div className="overflow-x-auto">
             <div className="text-left text-sm border-b bg-[#F9FAFA] p-2 rounded-lg">
               <div className="grid grid-cols-6 text-left bg-[#DEF5FF] rounded-lg font-medium">
@@ -118,8 +130,9 @@ const Transactions = () => {
 
               {/* Render Fetched Transactions */}
               {loading ? (
-                <div className="text-center py-4">Loading...</div>
-              ) : (
+ Array(5)
+                  .fill(0)
+                  .map((_, index) => <ShimmerRow key={index} />)              ) : (
                 transactions.map((transaction, index) => (
                   <div
                     key={transaction._id}
@@ -151,11 +164,15 @@ const Transactions = () => {
           </div>
 
           {/* Pagination Controls */}
-          <div className="flex justify-center mt-4 gap-3">
+          
+        </div>
+      )}
+
+      <div className="flex justify-end mt-4 gap-3">
             <button
               onClick={() => handlePageChange(pagination.currentPage - 1)}
               disabled={pagination.currentPage <= 1}
-              className="px-4 py-2 bg-gray-300 rounded-lg"
+              className="px-4 py-2 bg-gray-300 rounded-md"
             >
               Previous
             </button>
@@ -165,13 +182,11 @@ const Transactions = () => {
             <button
               onClick={() => handlePageChange(pagination.currentPage + 1)}
               disabled={pagination.currentPage >= pagination.totalPages}
-              className="px-4 py-2 bg-gray-300 rounded-lg"
+              className="px-4 py-2 text-white bg-blue-500 rounded-md"
             >
               Next
             </button>
           </div>
-        </div>
-      )}
 
       {/* Subscriptions Table (unchanged) */}
       {activeTab === "subscriptions" && (

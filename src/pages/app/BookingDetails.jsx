@@ -13,7 +13,29 @@ import {
 import { FaArrowLeft } from "react-icons/fa";
 import axios from "../../axios";
 import { CiLocationOn } from "react-icons/ci";
-import {ac, wifi, pool,breakfast} from "../../assets/export";
+import {
+  acIcon,
+  barbQIcon,
+  bathIcon,
+  chargeIcon,
+  cleaningIcon,
+  deskIcon,
+  dispenserIcon,
+  dryerIcon,
+  fireAlarmIcon,
+  gymIcon,
+  ironIcon,
+  matleIcon,
+  parkingIcon,
+  silencerIcon,
+  smokeIcon,
+  stoveIcon,
+  switchIcon,
+  teaIcon,
+  tvIcon,
+  wifiIcon,
+  washingIcon,
+} from '../../assets/export'; // Update the path if necessary
 
 
 
@@ -140,17 +162,7 @@ const BookingDetails = () => {
     adminCommissionAmount,
   } = data;
 
- const amenitiesIcons = {
-    // "Wi-fi": <FaWifi />,
-    // "Air - Conditioning": <FaSnowflake />,
-    // "Pool": <FaSwimmingPool />,
-    // "Breakfast": <FaCoffee />,
-    "AC": <img src={ac} alt="Air Conditioning" className="w-6 h-6" />,
-    "Wi-fi": <img src={wifi} alt="Wi-Fi" className="w-6 h-6" />,
-    "Pool": <img src={pool} alt="Swimming Pool" className="w-6 h-6" />,
-    "Breakfast": <img src={breakfast} alt="Breakfast" className="w-6 h-6" />,
-    // Add more amenities and their respective icons here
-  };
+
 
 
 
@@ -205,7 +217,7 @@ const BookingDetails = () => {
               {room.city}, {room.state}
             </h2>
             <p className="text-gray-600 text-sm flex items-center mt-1">
-              <LocationEdit /> <span className="ml-2">{room.address}</span>
+              <CiLocationOn className="text-xl" /> <span className="ml-2">{room.address}</span>
             </p>
             <a
               href={`https://maps.google.com/?q=${room.address}`}
@@ -225,25 +237,72 @@ const BookingDetails = () => {
             <div className="mt-4">
   <div className="flex justify-between items-center">
     <h3 className="font-semibold text-gray-800 text-[16px]">Amenities</h3>
-    <h3 className="text-[#36C0EF] hover:underline cursor-pointer">View all</h3>
+    {/* <h3 className="text-[#36C0EF] hover:underline cursor-pointer">View all</h3> */}
   </div>
   <div className="flex gap-4 mt-2 flex-wrap">
     {room.amenities?.slice(0, 6).map((a, i) => {
       // Map the amenity to its icon
       const getAmenityIcon = (amenity) => {
-        switch (amenity) {
-          case "Wifi":
-            return <img src={wifi} alt="Wifi" className="w-6 h-6" />;
-          case "Heating":
-            return <img src={ac} alt="Air Conditioning" className="w-6 h-6" />;
-          case "Pool":
-            return <img src={pool} alt="Pool" className="w-6 h-6" />;
-          case "Breakfast":
-            return <img src={breakfast} alt="Breakfast" className="w-6 h-6" />;
-          default:
-            return <img src={wifi} alt="Wifi" className="w-6 h-6" />; // Default icon in case the amenity is not recognized
-        }
-      };
+  switch (amenity) {
+    case "Wifi":
+      return <img src={wifiIcon} alt="Wifi" className="w-6 h-6" />;
+    case "Heating":
+      return <img src={acIcon} alt="Heating" className="w-6 h-6" />;
+    case "Washer":
+      return <img src={washingIcon} alt="Washer" className="w-6 h-6" />;
+    case "Iron":
+      return <img src={ironIcon} alt="Iron" className="w-6 h-6" />;
+    case "Hair dryer":
+      return <img src={dryerIcon} alt="Hair Dryer" className="w-6 h-6" />;
+    case "EV Charger":
+      return <img src={chargeIcon} alt="EV Charger" className="w-6 h-6" />;
+    case "Cleaning Service":
+      return <img src={cleaningIcon} alt="Cleaning Service" className="w-6 h-6" />;
+    case "BBQ Grill":
+      return <img src={barbQIcon} alt="BBQ Grill" className="w-6 h-6" />;
+    case "Pool":
+      return <img src={bathIcon} alt="Pool" className="w-6 h-6" />;
+    case "Carbon Monoxide Alarm":
+      return <img src={fireAlarmIcon} alt="Carbon Monoxide Alarm" className="w-6 h-6" />;
+    case "Smoke Alarm":
+      return <img src={smokeIcon} alt="Smoke Alarm" className="w-6 h-6" />;
+    case "Hot Tub":
+      return <img src={bathIcon} alt="Hot Tub" className="w-6 h-6" />;
+    case "Water Dispenser":
+      return <img src={dispenserIcon} alt="Water Dispenser" className="w-6 h-6" />;
+    case "Dryer":
+      return <img src={dryerIcon} alt="Dryer" className="w-6 h-6" />;
+    case "Kitchen":
+      return <img src={deskIcon} alt="Kitchen" className="w-6 h-6" />;
+    case "Air - Conditioning":
+      return <img src={acIcon} alt="Air Conditioning" className="w-6 h-6" />;
+    case "Gym":
+      return <img src={gymIcon} alt="Gym" className="w-6 h-6" />;
+    case "Parking":
+      return <img src={parkingIcon} alt="Parking" className="w-6 h-6" />;
+    case "Matle":
+      return <img src={matleIcon} alt="Matle" className="w-6 h-6" />;
+    case "Silencer":
+      return <img src={silencerIcon} alt="Silencer" className="w-6 h-6" />;
+    case "Stove":
+      return <img src={stoveIcon} alt="Stove" className="w-6 h-6" />;
+    case "Switch":
+      return <img src={switchIcon} alt="Switch" className="w-6 h-6" />;
+    case "Tea":
+      return <img src={teaIcon} alt="Tea" className="w-6 h-6" />;
+    case "TV":
+      return <img src={tvIcon} alt="TV" className="w-6 h-6" />;
+    default:
+      return <img src={wifiIcon} alt="Default" className="w-6 h-6" />; // Default icon in case the amenity is not recognized
+  }
+};
+
+
+
+
+
+ 
+
 
       return (
         <div
@@ -253,7 +312,7 @@ const BookingDetails = () => {
           <div className="flex justify-center text-2xl text-[#36C0EF]">
             {getAmenityIcon(a)}
           </div>
-          <p className="text-center overflow-hidden text-ellipsis whitespace-nowrap">{a}</p>
+          <p className="text-center mt-1 overflow-hidden text-ellipsis whitespace-nowrap">{a}</p>
         </div>
       );
     })}

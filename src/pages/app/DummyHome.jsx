@@ -209,8 +209,19 @@ const DummyHome = () => {
     },
   ];
 
+
+  const Loader = () => (
+    <div className="flex justify-center items-center space-x-2">
+      <div className="w-10 h-10 border-4 border-t-4 border-gray-200 rounded-full animate-spin border-t-[#4A90E2]"></div>
+    </div>
+  );
+
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Loader />
+      </div>
+    );
   }
 
   if (error) {

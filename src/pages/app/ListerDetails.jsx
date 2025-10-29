@@ -4,6 +4,7 @@ import { IoCalendarOutline } from "react-icons/io5";
 import { useNavigate, useLocation, useParams } from "react-router";
 import axios from "../../axios"; // Make sure axios is installed
 import { warning } from "../../assets/export";
+import { SuccessToast } from "../../components/global/Toaster";
 
 const ListerDetails = () => {
   const [activeTab, setActiveTab] = useState("listings");
@@ -17,6 +18,7 @@ const ListerDetails = () => {
   const { userId } = useParams();
   console.log("Lister ID from params:", userId);
    const [isDeactivateModalOpen, setIsDeactivateModalOpen] = useState(false);
+    const [isDeactivating, setIsDeactivating] = useState(false);
   
   
     const openDeactivateModal = () => {
@@ -109,6 +111,27 @@ const ShimmerLoader = () => (
     </div>
   </div>
 );
+
+const handleDeactivateUser = async () => {
+  setIsDeactivating(true);
+  try {
+    const response = await axios.put(`/admin/toggleUserDeactivation/${userId}`);
+
+    if (response.data.success) {
+      setIsDeactivateModalOpen(false);
+      fetchUserDetails(activeTab, activeFilter, 1);
+     SuccessToast("User deactivated successfully");
+      navigate(-1);
+    } else {
+      ErrorToast(response.data.message || "Failed to deactivate user");
+    }
+  } catch (err) {
+    console.error("Deactivate user error:", err);
+    ErrorToast("Error deactivating user. Please try again.");
+  } finally {
+    setIsDeactivating(false);
+  }
+};
 
   return (
     <div className="p-6 min-h-screen">
@@ -256,36 +279,39 @@ const ShimmerLoader = () => (
         </div>
       </div>
 
-      {isDeactivateModalOpen && (
-                    <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
-                      <div className="bg-white p-6 rounded-lg shadow-lg w-[471px] h-[347px] flex flex-col items-center">
-                        <img
-                          src={warning}
-                          alt="Warning"
-                          className="w-[107px] h-[107px] mb-4"
-                        />
-                        <h2 className="text-[24px] font-bold mt-2 mb-4">Deactivate</h2>
-                        <p className="text-center text-[16px] text-gray-700 mb-6">
-                          Are you sure you want to deactivate this account?
-                        </p>
-            
-                        <div className="mt-4 flex justify-end w-full">
-                          <button
-                            onClick={closeDeactivateModal}
-                            className="px-4 py-4 bg-gray-300 w-[50%] rounded-lg mr-2"
-                          >
-                            No
-                          </button>
-                          <button
-                            onClick={closeDeactivateModal}
-                            className="px-4 py-4 button-bg w-[50%] text-white rounded-lg"
-                          >
-                            Yes
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  )}
+             {/* Deactivate Modal */}
+    {isDeactivateModalOpen && (
+      <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
+        <div className="bg-white p-6 rounded-lg shadow-lg w-[471px] h-[347px] flex flex-col items-center">
+          <img src={warning} alt="Warning" className="w-[107px] h-[107px] mb-4" />
+          <h2 className="text-[24px] font-bold mt-2 mb-4">Deactivate</h2>
+          <p className="text-center text-[16px] text-gray-700 mb-6">
+            Are you sure you want to deactivate this account?
+          </p>
+    
+          <div className="mt-4 flex justify-end w-full">
+            <button
+              onClick={closeDeactivateModal}
+              className="px-4 py-4 bg-gray-300 w-[50%] rounded-lg mr-2"
+            >
+              No
+            </button>
+            <button
+      onClick={handleDeactivateUser}
+      disabled={isDeactivating}
+      className={`px-4 py-4 w-[50%] text-white rounded-lg ${
+        isDeactivating
+          ? "bg-gray-400 cursor-not-allowed"
+          : "button-bg hover:opacity-90"
+      }`}
+    >
+      {isDeactivating ? "Deactivating..." : "Yes"}
+    </button>
+    
+          </div>
+        </div>
+      </div>
+    )}
     </div>
   );
 };

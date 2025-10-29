@@ -4,6 +4,31 @@ import { LocationEdit } from "lucide-react";
 import { BsFilePdf } from "react-icons/bs";
 import { FaWifi, FaSnowflake, FaSwimmingPool, FaCoffee, FaArrowLeft } from "react-icons/fa";
 import axios from "../../axios";
+import { CiLocationOn } from "react-icons/ci";
+import {
+  acIcon,
+  barbQIcon,
+  bathIcon,
+  chargeIcon,
+  cleaningIcon,
+  deskIcon,
+  dispenserIcon,
+  dryerIcon,
+  fireAlarmIcon,
+  gymIcon,
+  ironIcon,
+  matleIcon,
+  parkingIcon,
+  silencerIcon,
+  smokeIcon,
+  stoveIcon,
+  switchIcon,
+  teaIcon,
+  tvIcon,
+  wifiIcon,
+  washingIcon,
+} from '../../assets/export';
+
 
 const BookingDetailsSkeleton = () => {
   return (
@@ -231,7 +256,7 @@ const RoomDetails = () => {
               {roomData.city}, {roomData.state}
             </h2>
             <p className="text-gray-600 text-sm flex items-center mt-1">
-              <LocationEdit /> <span className="ml-2">{roomData.address}</span>
+              <CiLocationOn className="text-xl" /> <span className="ml-2">{roomData.address}</span>
             </p>
             <a
               href={`https://maps.google.com/?q=${roomData.address}`}
@@ -239,7 +264,7 @@ const RoomDetails = () => {
               rel="noopener noreferrer"
               className="text-blue-500 text-sm underline flex mt-1"
             >
-              <LocationEdit className="mr-2" />
+              <CiLocationOn  className="mr-2 text-xl" />
               Show on Google Maps
             </a>
 
@@ -250,23 +275,85 @@ const RoomDetails = () => {
             </p>
 
             {/* Amenities */}
-            <div className="mt-4">
-              <div className="flex justify-between items-center">
-                <h3 className="font-semibold text-gray-800 text-[16px]">Amenities</h3>
-                <h3 className="text-[#36C0EF] hover:underline cursor-pointer">View all</h3>
-              </div>
-              <div className="flex gap-4 mt-2 flex-wrap">
-                {(roomData.amenities || []).slice(0, 6).map((a, i) => (
-                  <div
-                    key={i}
-                    className="flex flex-col items-center text-sm text-gray-600 w-[84px] rounded-xl bg-white p-4"
-                  >
-                    {amenitiesIcons[a] || <FaWifi />}
-                    {a}
-                  </div>
-                ))}
-              </div>
-            </div>
+            <div className="flex gap-4 mt-2 flex-wrap">
+               {roomData.amenities?.slice(0, 6).map((a, i) => {
+                 // Map the amenity to its icon
+                 const getAmenityIcon = (amenity) => {
+             switch (amenity) {
+               case "Wifi":
+                 return <img src={wifiIcon} alt="Wifi" className="w-6 h-6" />;
+               case "Heating":
+                 return <img src={acIcon} alt="Heating" className="w-6 h-6" />;
+               case "Washer":
+                 return <img src={washingIcon} alt="Washer" className="w-6 h-6" />;
+               case "Iron":
+                 return <img src={ironIcon} alt="Iron" className="w-6 h-6" />;
+               case "Hair dryer":
+                 return <img src={dryerIcon} alt="Hair Dryer" className="w-6 h-6" />;
+               case "EV Charger":
+                 return <img src={chargeIcon} alt="EV Charger" className="w-6 h-6" />;
+               case "Cleaning Service":
+                 return <img src={cleaningIcon} alt="Cleaning Service" className="w-6 h-6" />;
+               case "BBQ Grill":
+                 return <img src={barbQIcon} alt="BBQ Grill" className="w-6 h-6" />;
+               case "Pool":
+                 return <img src={bathIcon} alt="Pool" className="w-6 h-6" />;
+               case "Carbon Monoxide Alarm":
+                 return <img src={fireAlarmIcon} alt="Carbon Monoxide Alarm" className="w-6 h-6" />;
+               case "Smoke Alarm":
+                 return <img src={smokeIcon} alt="Smoke Alarm" className="w-6 h-6" />;
+               case "Hot Tub":
+                 return <img src={bathIcon} alt="Hot Tub" className="w-6 h-6" />;
+               case "Water Dispenser":
+                 return <img src={dispenserIcon} alt="Water Dispenser" className="w-6 h-6" />;
+               case "Dryer":
+                 return <img src={dryerIcon} alt="Dryer" className="w-6 h-6" />;
+               case "Kitchen":
+                 return <img src={deskIcon} alt="Kitchen" className="w-6 h-6" />;
+               case "Air - Conditioning":
+                 return <img src={acIcon} alt="Air Conditioning" className="w-6 h-6" />;
+               case "Gym":
+                 return <img src={gymIcon} alt="Gym" className="w-6 h-6" />;
+               case "Parking":
+                 return <img src={parkingIcon} alt="Parking" className="w-6 h-6" />;
+               case "Matle":
+                 return <img src={matleIcon} alt="Matle" className="w-6 h-6" />;
+               case "Silencer":
+                 return <img src={silencerIcon} alt="Silencer" className="w-6 h-6" />;
+               case "Stove":
+                 return <img src={stoveIcon} alt="Stove" className="w-6 h-6" />;
+               case "Switch":
+                 return <img src={switchIcon} alt="Switch" className="w-6 h-6" />;
+               case "Tea":
+                 return <img src={teaIcon} alt="Tea" className="w-6 h-6" />;
+               case "TV":
+                 return <img src={tvIcon} alt="TV" className="w-6 h-6" />;
+               default:
+                 return <img src={wifiIcon} alt="Default" className="w-6 h-6" />; // Default icon in case the amenity is not recognized
+             }
+           };
+           
+           
+           
+           
+           
+          
+       
+           
+           
+                 return (
+                   <div
+                     key={i}
+                     className="flex flex-col items-center text-sm text-gray-600 w-[84px] rounded-xl bg-white p-4"
+                   >
+                     <div className="flex justify-center text-2xl text-[#36C0EF]">
+                       {getAmenityIcon(a)}
+                     </div>
+                     <p className="text-center mt-1 overflow-hidden text-ellipsis whitespace-nowrap">{a}</p>
+                   </div>
+                 );
+               })}
+             </div>
 
             {/* Description */}
             <div className="mt-4">

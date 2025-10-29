@@ -3,7 +3,7 @@ import { FaArrowLeft, FaStar } from "react-icons/fa";
 import { IoCalendarOutline } from "react-icons/io5";
 import { useNavigate, useParams, useLocation } from "react-router";
 import axios from "../../axios";
-import { ErrorToast } from "../../components/global/Toaster";
+import { ErrorToast, SuccessToast } from "../../components/global/Toaster";
 import { warning } from "../../assets/export";
 
 const UserDetails = () => {
@@ -19,6 +19,7 @@ const UserDetails = () => {
   const [pagination, setPagination] = useState({});
   const [loading, setLoading] = useState(false);
   const [isDeactivateModalOpen, setIsDeactivateModalOpen] = useState(false);
+  const [isDeactivating, setIsDeactivating] = useState(false);
 
 
   const openDeactivateModal = () => {
@@ -49,6 +50,9 @@ const UserDetails = () => {
         return "bg-gray-400 text-white";
     }
   };
+
+  
+
 
   const fetchUserDetails = async (roomType = "multi", bookingStatus = "all", page = 1) => {
     setLoading(true);
@@ -92,6 +96,30 @@ const UserDetails = () => {
       </div>
     </div>
   );
+
+
+  // Add this function inside your component, above the return()
+const handleDeactivateUser = async () => {
+  setIsDeactivating(true);
+  try {
+    const response = await axios.put(`/admin/toggleUserDeactivation/${userId}`);
+
+    if (response.data.success) {
+      SuccessToast("User deactivated successfully");
+      setIsDeactivateModalOpen(false);
+      fetchUserDetails(activeTab, activeFilter, 1);
+      navigate(-1);
+    } else {
+      ErrorToast(response.data.message || "Failed to deactivate user");
+    }
+  } catch (err) {
+    console.error("Deactivate user error:", err);
+    ErrorToast("Error deactivating user. Please try again.");
+  } finally {
+    setIsDeactivating(false);
+  }
+};
+
 
   return (
     <div className="p-6 min-h-screen ">
@@ -186,7 +214,7 @@ const UserDetails = () => {
         <div
           key={b.id}
           onClick={() => navigate(`/app/roomdetails/${b.id}`)}
-          className="bg-white w-[327px] h-[265px] rounded-2xl shadow-sm overflow-hidden relative cursor-pointer hover:shadow-md transition-shadow"
+          className="bg-white w-[327px] h-[265px] rounded-2xl  overflow-hidden relative cursor-pointer hover:shadow-md transition-shadow"
         >
           {/* Status Badge */}
           <span className={`absolute top-6 left-6 px-3 py-1 text-xs font-medium ${getStatusColor(b.status)}`}>
@@ -223,36 +251,40 @@ const UserDetails = () => {
       </div>
 
       {/* Deactivate Modal */}
-            {isDeactivateModalOpen && (
-              <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
-                <div className="bg-white p-6 rounded-lg shadow-lg w-[471px] h-[347px] flex flex-col items-center">
-                  <img
-                    src={warning}
-                    alt="Warning"
-                    className="w-[107px] h-[107px] mb-4"
-                  />
-                  <h2 className="text-[24px] font-bold mt-2 mb-4">Deactivate</h2>
-                  <p className="text-center text-[16px] text-gray-700 mb-6">
-                    Are you sure you want to deactivate this account?
-                  </p>
-      
-                  <div className="mt-4 flex justify-end w-full">
-                    <button
-                      onClick={closeDeactivateModal}
-                      className="px-4 py-4 bg-gray-300 w-[50%] rounded-lg mr-2"
-                    >
-                      No
-                    </button>
-                    <button
-                      onClick={closeDeactivateModal}
-                      className="px-4 py-4 button-bg w-[50%] text-white rounded-lg"
-                    >
-                      Yes
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
+          {/* Deactivate Modal */}
+{isDeactivateModalOpen && (
+  <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
+    <div className="bg-white p-6 rounded-lg shadow-lg w-[471px] h-[347px] flex flex-col items-center">
+      <img src={warning} alt="Warning" className="w-[107px] h-[107px] mb-4" />
+      <h2 className="text-[24px] font-bold mt-2 mb-4">Deactivate</h2>
+      <p className="text-center text-[16px] text-gray-700 mb-6">
+        Are you sure you want to deactivate this account?
+      </p>
+
+      <div className="mt-4 flex justify-end w-full">
+        <button
+          onClick={closeDeactivateModal}
+          className="px-4 py-4 bg-gray-300 w-[50%] rounded-lg mr-2"
+        >
+          No
+        </button>
+        <button
+  onClick={handleDeactivateUser}
+  disabled={isDeactivating}
+  className={`px-4 py-4 w-[50%] text-white rounded-lg ${
+    isDeactivating
+      ? "bg-gray-400 cursor-not-allowed"
+      : "button-bg hover:opacity-90"
+  }`}
+>
+  {isDeactivating ? "Deactivating..." : "Yes"}
+</button>
+
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
   );
 };

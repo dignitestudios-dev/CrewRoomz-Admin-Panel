@@ -18,7 +18,7 @@ const ReportedIssues = () => {
   const [selectedReportId, setSelectedReportId] = useState(null);  // Store the selected report ID
 
   // Fetch pending reports on component mount
-  useEffect(() => {
+ useEffect(() => {
     const fetchReports = async () => {
       try {
         const response = await axios.get("/admin/pendingReports");
@@ -28,6 +28,8 @@ const ReportedIssues = () => {
         }
       } catch (error) {
         console.error("Failed to fetch reports", error);
+      } finally {
+        setLoading(false);  // Set loading to false once data is fetched
       }
     };
 
@@ -73,6 +75,18 @@ const ReportedIssues = () => {
     }
   };
 
+
+   const ShimmerRow = () => (
+    <div className="grid grid-cols-6 border-b last:border-none animate-pulse gap-4 space-y-4">
+      <div className="py-4 px-4 bg-gray-300 h-4 rounded mt-4"></div>
+      <div className="py-4 px-4 bg-gray-300 h-4 rounded"></div>
+      <div className="py-4 px-4 col-span-2 bg-gray-300 h-4 rounded"></div>
+      <div className="py-4 px-4 bg-gray-300 h-4 rounded"></div>
+      <div className="py-4 px-4 bg-gray-300 h-4 rounded"></div>
+    
+    </div>
+  );
+
   return (
     <div className="p-6 pt-2 min-h-screen">
       {/* Heading */}
@@ -80,7 +94,7 @@ const ReportedIssues = () => {
         <h1 className="text-[36px] font-extrabold text-black mb-4">Reported Issues</h1>
 
         {/* Tabs */}
-        <div className="flex bg-white rounded-lg shadow p-1 mb-4">
+        {/* <div className="flex bg-white rounded-lg shadow p-1 mb-4">
           <button
             onClick={() => setActiveTab("listers")}
             className={`px-14 py-2 rounded-lg font-medium ${
@@ -97,7 +111,7 @@ const ReportedIssues = () => {
           >
             Users
           </button>
-        </div>
+        </div> */}
       </div>
 
       {/* Table */}
@@ -116,8 +130,14 @@ const ReportedIssues = () => {
             </div>
 
             {/* Table Rows */}
+                 {/* Table Rows */}
             <div>
-              {reports.length === 0 ? (
+              {loading ? (
+                // Show shimmer rows while data is loading
+                Array(5)
+                  .fill(0)
+                  .map((_, index) => <ShimmerRow key={index} />)
+              ) : reports.length === 0 ? (
                 <div className="py-4 px-4 col-span-9 text-center">No reports available</div>
               ) : (
                 reports.map((report, index) => (
