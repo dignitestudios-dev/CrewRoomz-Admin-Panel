@@ -338,8 +338,8 @@ const DummyHome = () => {
                     </div>
                     <div className="col-span-1">{sub._id.slice(-8).toUpperCase()}</div>
                     <div className="col-span-1">{sub.user?.name || "N/A"}</div>
-                    <div className="col-span-1">{sub.productId.replace(/_/g, " ")}</div>
-                    <div className="col-span-1">{sub.subscriptionPlan}</div>
+                    <div className="col-span-1 capitalize">{sub.productId.replace(/_/g, " ")}</div>
+                    <div className="col-span-1 capitalize">{sub.subscriptionPlan}</div>
                     <div className="col-span-1">${sub.subscriptionPrice.toFixed(2)}</div>
                   </div>
                 ))}

@@ -5,9 +5,11 @@ import { useNavigate, useParams, useLocation } from "react-router";
 import axios from "../../axios";
 import { ErrorToast, SuccessToast } from "../../components/global/Toaster";
 import { warning } from "../../assets/export";
+import DatePicker from "react-datepicker"; // Import DatePicker
+import "react-datepicker/dist/react-datepicker.css"; // Add styles for date picker
 
 const UserDetails = () => {
-  const { userId } = useParams(); 
+  const { userId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
   const { name: stateName, email: stateEmail, profilePicture: stateProfilePicture } = location.state || {};
@@ -20,7 +22,10 @@ const UserDetails = () => {
   const [loading, setLoading] = useState(false);
   const [isDeactivateModalOpen, setIsDeactivateModalOpen] = useState(false);
   const [isDeactivating, setIsDeactivating] = useState(false);
-
+  
+  // State for the date-picker and showing the calendar
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
   const openDeactivateModal = () => {
     setIsDeactivateModalOpen(true);
@@ -36,9 +41,7 @@ const UserDetails = () => {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case "Ongoing":
-        return "bg-[#FBBC04] text-white";
-      case "Upcoming":
+      case "Pending":
         return "bg-[#349DC7] text-white";
       case "Canceled":
         return "bg-red-500 text-white";
@@ -50,9 +53,6 @@ const UserDetails = () => {
         return "bg-gray-400 text-white";
     }
   };
-
-  
-
 
   const fetchUserDetails = async (roomType = "multi", bookingStatus = "all", page = 1) => {
     setLoading(true);
@@ -78,52 +78,20 @@ const UserDetails = () => {
   };
 
   useEffect(() => {
-    // Trigger the fetch when activeTab, activeFilter, or page changes
     fetchUserDetails(activeTab, activeFilter, 1);
   }, [userId, activeTab, activeFilter]);
 
-  // Shimmer loader for bookings
-  const ShimmerBookingCard = () => (
-    <div className="bg-white w-[327px] h-[265px] rounded-2xl shadow-sm overflow-hidden animate-pulse">
-      <div className="px-6 pt-6 pb-4">
-        <div className="h-4 bg-gray-300 rounded w-24 mb-2"></div>
-        <div className="h-4 bg-gray-300 rounded w-16 mb-4"></div>
-      </div>
-      <div className="h-[156px] bg-gray-300 rounded-lg m-4"></div>
-      <div className="px-6 pt-4 pb-4">
-        <div className="h-4 bg-gray-300 rounded w-20 mb-2"></div>
-        <div className="h-3 bg-gray-300 rounded w-28"></div>
-      </div>
-    </div>
-  );
+  // Handle date selection
+  const handleDateChange = (date) => {
+    setSelectedDate(date);
+    setIsCalendarOpen(false); // Close the calendar after selection
 
-
-  // Add this function inside your component, above the return()
-const handleDeactivateUser = async () => {
-  setIsDeactivating(true);
-  try {
-    const response = await axios.put(`/admin/toggleUserDeactivation/${userId}`);
-
-    if (response.data.success) {
-      SuccessToast("User deactivated successfully");
-      setIsDeactivateModalOpen(false);
-      fetchUserDetails(activeTab, activeFilter, 1);
-      navigate(-1);
-    } else {
-      ErrorToast(response.data.message || "Failed to deactivate user");
-    }
-  } catch (err) {
-    console.error("Deactivate user error:", err);
-    ErrorToast("Error deactivating user. Please try again.");
-  } finally {
-    setIsDeactivating(false);
-  }
-};
-
+    // Send the selected date as a parameter to the URL or fetch data with the selected date
+    navigate(`/app/user-details/${userId}?date=${date.toISOString()}`);
+  };
 
   return (
-    <div className="p-6 min-h-screen ">
-      {/* Profile Header */}
+    <div className="p-6 min-h-screen">
       <div className="flex items-center space-x-2">
         <button onClick={handleBack} className="pb-1 mr-1 font-bold text-black ">
           <FaArrowLeft size={28} />
@@ -131,7 +99,6 @@ const handleDeactivateUser = async () => {
         <h1 className="text-[36px] text-black mb-2 font-bold">Profile</h1>
       </div>
 
-      {/* Profile Info */}
       <div className="bg-white rounded-2xl p-6 flex flex-col md:flex-row justify-between items-center shadow-sm">
         <div className="flex items-center gap-4">
           <img
@@ -144,13 +111,35 @@ const handleDeactivateUser = async () => {
             <p className="text-gray-500">{stateEmail || user?.email || "-"}</p>
           </div>
         </div>
-        <button  onClick={openDeactivateModal}
- className="bg-[#DC1D00] text-white px-6 py-4 rounded-full font-medium hover:bg-red-700 mt-4 md:mt-0">
+        <button onClick={openDeactivateModal} className="bg-[#DC1D00] text-white px-6 py-4 rounded-full font-medium hover:bg-red-700 mt-4 md:mt-0">
           Deactivate
         </button>
       </div>
 
-      {/* Bookings / Listings Section */}
+      {/* Calendar Icon and Date Picker */}
+      <div className="mt-6">
+        <div className="flex flex-wrap gap-2 mb-4">
+          <div className="ml-auto flex gap-2">
+            <button 
+              onClick={() => setIsCalendarOpen((prev) => !prev)} 
+              className="flex items-center gap-2 px-3 py-2 border rounded-full text-sm bg-white">
+              Calendar <IoCalendarOutline />
+            </button>
+          </div>
+        </div>
+
+        {/* Date Picker - only shown when `isCalendarOpen` is true */}
+        {isCalendarOpen && (
+          <DatePicker
+            selected={selectedDate}
+            onChange={handleDateChange}
+            inline
+            dateFormat="yyyy-MM-dd"
+          />
+        )}
+      </div>
+
+      {/* Bookings Section */}
       <div className="mt-6">
         <h2 className="text-xl font-semibold mb-4">
           {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}{" "}
@@ -174,117 +163,55 @@ const handleDeactivateUser = async () => {
           ))}
         </div>
 
-        {/* Filters for Booking Status */}
-        <div className="flex flex-wrap gap-2 mb-4">
-          {["All", "On-going", "Upcoming", "Completed", "Canceled"].map((filter) => (
-            <button
-              key={filter}
-              onClick={() => setActiveFilter(filter.toLowerCase())}
-              className={`px-4 py-1.5 rounded-full border text-sm ${
-                activeFilter === filter.toLowerCase()
-                  ? "bg-sky-500 text-white border-sky-500"
-                  : "bg-blue-100 border border-[#36C0EF] text-black hover:text-white hover:bg-[#36C0EF]"
-              }`}
-            >
-              {filter}
-            </button>
-          ))}
-          <div className="ml-auto flex gap-2">
-            <button className="flex items-center gap-2 px-3 py-2 border rounded-full text-sm bg-white">
-              Calendar <IoCalendarOutline />
-            </button>
-            <button className="px-6 py-1.5 border rounded-full text-sm bg-white">
-              All
-            </button>
-          </div>
-        </div>
-
         {/* Cards for Bookings */}
         <div className="bg-white p-6 rounded-2xl">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 bg-[#F9FAFA] p-2 pt-4 rounded-2xl">
-  {loading
-    ? Array(6).fill(0).map((_, idx) => <ShimmerBookingCard key={idx} />)
-    : bookings.length === 0
-    ? (
-      <div className="col-span-3 text-center text-md font-medium text-gray-500">
-        No Listings Available
-      </div>
-    )
-    : bookings.map((b) => (
-        <div
-          key={b.id}
-          onClick={() => navigate(`/app/roomdetails/${b.id}`)}
-          className="bg-white w-[327px] h-[265px] rounded-2xl  overflow-hidden relative cursor-pointer hover:shadow-md transition-shadow"
-        >
-          {/* Status Badge */}
-          <span className={`absolute top-6 left-6 px-3 py-1 text-xs font-medium ${getStatusColor(b.status)}`}>
-            {b.status}
-          </span>
+            {loading
+              ? Array(6).fill(0).map((_, idx) => <ShimmerBookingCard key={idx} />)
+              : bookings.length === 0
+              ? (
+                <div className="col-span-3 text-center text-md font-medium text-gray-500">
+                  No Listings Available
+                </div>
+              )
+              : bookings.map((b) => (
+                <div
+                  key={b.id}
+                  onClick={() => navigate(`/app/roomdetails/${b.id}`)}
+                  className="bg-white w-[327px] h-[265px] rounded-2xl overflow-hidden relative cursor-pointer hover:shadow-md transition-shadow"
+                >
+                  {/* Status Badge */}
+                  <span className={`absolute top-6 left-6 px-3 py-1 text-xs font-medium ${getStatusColor(b.status)}`}>
+                    {b.status}
+                  </span>
 
-          {/* Image */}
-          <div className="flex justify-center mt-3 p-4 pt-0 pb-1">
-            <img
-              src={b.imageUrl || "https://via.placeholder.com/300x150"}
-              alt={b.location}
-              className="w-full h-[156px] object-cover rounded-lg"
-            />
-          </div>
+                  {/* Image */}
+                  <div className="flex justify-center mt-3 p-4 pt-0 pb-1">
+                    <img
+                      src={b.imageUrl || "https://via.placeholder.com/300x150"}
+                      alt={b.location}
+                      className="w-full h-[156px] object-cover rounded-lg"
+                    />
+                  </div>
 
-          {/* Info */}
-          <div className="px-6 pt-0 pb-4">
-            <div className="flex justify-between">
-              <h3 className="font-semibold text-[16px]">{b.location}</h3>
-              <div className="flex items-center gap-1 text-[14px] mt-1 ml-auto">
-                <FaStar className="text-yellow-400" />
-                <span>{b.rating}</span>
-              </div>
-            </div>
+                  {/* Info */}
+                  <div className="px-6 pt-0 pb-4">
+                    <div className="flex justify-between">
+                      <h3 className="font-semibold text-[16px]">{b.location}</h3>
+                      <div className="flex items-center gap-1 text-[14px] mt-1 ml-auto">
+                        <FaStar className="text-yellow-400" />
+                        <span>{b.rating}</span>
+                      </div>
+                    </div>
 
-            <p className="text-gray-500 text-sm flex items-center">{b.address || "-"}</p>
-            <p className="text-sm mt-2 font-medium">{b.details || "-"}</p>
+                    <p className="text-gray-500 text-sm flex items-center">{b.address || "-"}</p>
+                    <p className="text-sm mt-2 font-medium">{b.details || "-"}</p>
+                  </div>
+                </div>
+              ))}
           </div>
         </div>
-      ))}
-</div>
-
-        </div>
       </div>
-
-      {/* Deactivate Modal */}
-          {/* Deactivate Modal */}
-{isDeactivateModalOpen && (
-  <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
-    <div className="bg-white p-6 rounded-lg shadow-lg w-[471px] h-[347px] flex flex-col items-center">
-      <img src={warning} alt="Warning" className="w-[107px] h-[107px] mb-4" />
-      <h2 className="text-[24px] font-bold mt-2 mb-4">Deactivate</h2>
-      <p className="text-center text-[16px] text-gray-700 mb-6">
-        Are you sure you want to deactivate this account?
-      </p>
-
-      <div className="mt-4 flex justify-end w-full">
-        <button
-          onClick={closeDeactivateModal}
-          className="px-4 py-4 bg-gray-300 w-[50%] rounded-lg mr-2"
-        >
-          No
-        </button>
-        <button
-  onClick={handleDeactivateUser}
-  disabled={isDeactivating}
-  className={`px-4 py-4 w-[50%] text-white rounded-lg ${
-    isDeactivating
-      ? "bg-gray-400 cursor-not-allowed"
-      : "button-bg hover:opacity-90"
-  }`}
->
-  {isDeactivating ? "Deactivating..." : "Yes"}
-</button>
-
-      </div>
-    </div>
-  </div>
-)}
-
     </div>
   );
 };

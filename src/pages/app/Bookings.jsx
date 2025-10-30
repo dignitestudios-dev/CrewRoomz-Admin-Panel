@@ -123,7 +123,7 @@ const Bookings = () => {
               >
                 <div className="py-4 px-4">{index + 1}</div>
                 <div className="py-4 px-2">{booking._id.slice(-6)}</div>
-                <div className="py-4 px-2">{booking.roomType}</div>
+                <div className="py-4 px-2 capitalize">{booking.roomType}</div>
                 <div className="py-4 px-10">{booking.bed.length}</div>
                 <div className="py-4 px-4">
                   {booking.room.city}, {booking.room.state}

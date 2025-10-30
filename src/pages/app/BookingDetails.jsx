@@ -103,7 +103,7 @@ import {
         <div className="bg-white rounded-2xl p-6 space-y-3">
           <div className="h-4 w-48 bg-gray-300 rounded-md" />
           {Array(2).fill(0).map((_, i) => (
-            <div key={i} className="h-12 bg-gray-200 rounded-xl" />
+            <div key={i} className="h-12 bg-gray-200 rounded-xl " />
           ))}
         </div>
 
@@ -123,6 +123,12 @@ const BookingDetails = () => {
 
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isBillingDetailsVisible, setIsBillingDetailsVisible] = useState(false);
+
+  // Function to handle the toggle
+    const handleToggleBillingDetails = () => {
+    setIsBillingDetailsVisible((prev) => !prev);
+  };
 
   const handleBack = () => navigate(-1);
 
@@ -164,6 +170,7 @@ const BookingDetails = () => {
 
 
 
+  const totalAmount = parseFloat(platformFee) + parseFloat(adminCommissionAmount) + parseFloat(totalPrice);
 
 
   return (
@@ -353,7 +360,7 @@ const BookingDetails = () => {
   {bed.map((b, i) => (
     <div key={i} className="mb-3">
       {/* Display Bed Type above the blue container */}
-      <p className="text-gray-700 font-medium mb-2">{b.type}</p>
+      <p className="text-gray-700 font-medium mb-2 capitalize">{b.type}</p>
       
       <div className="flex items-center justify-between bg-[#36C0EF] p-4 rounded-2xl">
         <span className="bg-[#36C0EF] text-white text-sm font-semibold px-4 py-2 rounded-lg">
@@ -430,51 +437,89 @@ const BookingDetails = () => {
   <div className="bg-white rounded-2xl p-6">
       <h3 className="font-semibold text-gray-800 mb-4">Booking Details</h3>
 
-    <div className="border-b border-gray-200 mb-4 flex gap-6">
-      <button className="text-[#36C0EF]  border-b-2 border-[#36C0EF] pb-2">
-        Summary
-      </button>
-      <button className="text-gray-400  pb-2 hover:text-[#36C0EF]">
-        Billing Details
-      </button>
-    </div>
+      <div className="border-b border-gray-200 mb-4 flex gap-6">
+        <button
+          onClick={() => setIsBillingDetailsVisible(false)} // Switch to Summary
+          className={`${
+            !isBillingDetailsVisible ? 'text-[#36C0EF] border-b-2 border-[#36C0EF]' : 'text-gray-400'
+          } pb-2 hover:text-[#36C0EF]`}
+        >
+          Summary
+        </button>
+        <button
+          onClick={handleToggleBillingDetails} // Switch to Billing Details
+          className={`${
+            isBillingDetailsVisible ? 'text-[#36C0EF] border-b-2 border-[#36C0EF]' : 'text-gray-400'
+          } pb-2 hover:text-[#36C0EF]`}
+        >
+          Billing Details
+        </button>
+      </div>
 
-    {/* Booking Summary */}
-    <div className="space-y-3 text-sm text-gray-700">
-      <div className="flex justify-between">
-        <p className=" text-gray-600">Booking ID:</p>
-        <p className="font-semibold text-gray-800">{data._id}</p>
-      </div>
-      <div className="flex justify-between">
-        <p className=" text-gray-600">Bed Type:</p>
-        <p>{bed[0]?.type || "N/A"}</p>
-      </div>
-      <div className="flex justify-between">
-        <p className=" text-gray-600">Booking Type:</p>
-        <p>{data.bookingType || "N/A"}</p>
-      </div>
-      <div className="flex justify-between">
-        <p className=" text-gray-600">Price:</p>
-        <p>${totalPrice}</p>
-      </div>
-      <div className="flex justify-between">
-        <p className=" text-gray-600">Stay Duration:</p>
-        <p>
-          {new Date(startDate).toLocaleDateString("en-US", {
-            day: "2-digit",
-            month: "short",
-            year: "numeric",
-          })}{" "}
-          -{" "}
-          {new Date(endDate).toLocaleDateString("en-US", {
-            day: "2-digit",
-            month: "short",
-            year: "numeric",
-          })}
-        </p>
-      </div>
+      {/* Booking Summary */}
+      {!isBillingDetailsVisible && (
+        <div className="space-y-3 text-sm text-gray-700">
+          <div className="flex justify-between">
+            <p className="text-gray-600">Booking ID:</p>
+            <p className="font-semibold text-gray-800">{data._id}</p>
+          </div>
+          <div className="flex justify-between">
+            <p className="text-gray-600">Bed Type:</p>
+            <p>{bed[0]?.type || "N/A"}</p>
+          </div>
+          <div className="flex justify-between">
+            <p className="text-gray-600">Booking Type:</p>
+            <p className="capitalize">{data.bookingType || "N/A"}</p>
+          </div>
+          <div className="flex justify-between">
+            <p className="text-gray-600">Price:</p>
+            <p>${totalPrice}</p>
+          </div>
+          <div className="flex justify-between">
+            <p className="text-gray-600">Stay Duration:</p>
+            <p>
+              {new Date(startDate).toLocaleDateString("en-US", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+              })}{" "}
+              -{" "}
+              {new Date(endDate).toLocaleDateString("en-US", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+              })}
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Billing Details */}
+      {isBillingDetailsVisible && (
+        <div className="bg-white rounded-2xl mt-6">
+          {/* <h3 className="font-semibold text-gray-800 mb-4">Financial Details</h3> */}
+          <div className="space-y-3 text-sm text-gray-700">
+            <div className="flex justify-between">
+              <p className="text-gray-600">Platform Fee:</p>
+              <p className="font-semibold text-gray-800">${platformFee}</p>
+            </div>
+            <div className="flex justify-between">
+              <p className="text-gray-600">Admin Commission:</p>
+              <p className="font-semibold text-gray-800">${adminCommissionAmount}</p>
+            </div>
+            <div className="flex justify-between border-b pb-8">
+              <p className="text-gray-600">Total Price:</p>
+              <p className="font-semibold text-gray-800">${totalPrice}</p>
+            </div>
+            {/* Display the calculated total amount */}
+            <div className="flex justify-between">
+              <p className="text-gray-600 font-semibold">Total Amount:</p>
+              <p className="font-semibold text-gray-800">${totalAmount.toFixed(2)}</p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
-  </div>
 </div>
 
     </div>
