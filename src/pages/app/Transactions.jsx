@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
-import axios from "../../axios"
+import axios from "../../axios";
+import RecentSubscription from "./RecentSubscription";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css"; // Import styles for the datepicker
+import RecentSubscriptionTable from "../../components/RecentSubscriptionTable";
 
 const Transactions = () => {
   const [activeTab, setActiveTab] = useState("bookings");
-  const [activeFilter, setActiveFilter] = useState("received");
   const [transactions, setTransactions] = useState([]); // State to store fetched transactions
   const [loading, setLoading] = useState(false); // Loading state
   const [pagination, setPagination] = useState({
@@ -12,11 +15,19 @@ const Transactions = () => {
     itemsPerPage: 10,
   });
 
-  // Fetch booking transactions
+  const [startDate, setStartDate] = useState(null); // State for start date
+  const [endDate, setEndDate] = useState(null); // State for end date
+
+  // Fetch booking transactions with optional date filter
   const fetchTransactions = async (page = 1) => {
     setLoading(true);
     try {
-      const response = await axios.get(`/admin/bookingTransactions?page=${page}`);
+      // Prepare query parameters with date filter if dates are provided
+      let query = `/admin/bookingTransactions?page=${page}`;
+      if (startDate) query += `&startDate=${startDate.toISOString().split('T')[0]}`; // Format to 'yyyy-mm-dd'
+      if (endDate) query += `&endDate=${endDate.toISOString().split('T')[0]}`; // Format to 'yyyy-mm-dd'
+
+      const response = await axios.get(query);
       if (response.data.success) {
         setTransactions(response.data.data.transactions);
         setPagination(response.data.data.pagination);
@@ -30,7 +41,7 @@ const Transactions = () => {
     }
   };
 
-  // Fetch transactions when the component mounts
+  // Fetch transactions when the component mounts or pagination changes
   useEffect(() => {
     fetchTransactions(pagination.currentPage);
   }, [pagination.currentPage]);
@@ -45,15 +56,22 @@ const Transactions = () => {
     }
   };
 
+  // Handle date change for start and end dates
+  const handleDateChange = () => {
+    setPagination((prev) => ({
+      ...prev,
+      currentPage: 1, // Reset to page 1 when a new date filter is applied
+    }));
+    fetchTransactions(1); // Fetch transactions with the new date filter
+  };
 
-   const ShimmerRow = () => (
+  const ShimmerRow = () => (
     <div className="grid grid-cols-6 border-b last:border-none animate-pulse gap-4 space-y-4">
       <div className="py-4 px-4 bg-gray-300 h-4 rounded mt-4"></div>
       <div className="py-4 px-4 bg-gray-300 h-4 rounded"></div>
       <div className="py-4 px-4 col-span-2 bg-gray-300 h-4 rounded"></div>
       <div className="py-4 px-4 bg-gray-300 h-4 rounded"></div>
       <div className="py-4 px-4 bg-gray-300 h-4 rounded"></div>
-    
     </div>
   );
 
@@ -63,166 +81,122 @@ const Transactions = () => {
         Transaction Overview
       </h1>
 
-      {/* Tabs */}
-      {/* <div className="flex bg-white rounded-lg w-72 p-1 mb-4">
-        <button
-          onClick={() => setActiveTab("bookings")}
-          className={`px-8 py-2 rounded-lg font-medium ${
-            activeTab === "bookings"
-              ? "button-bg text-white"
-              : "text-gray-600 hover:bg-gray-100"
-          }`}
-        >
-          Bookings
-        </button>
-        <button
-          onClick={() => setActiveTab("subscriptions")}
-          className={`px-6 py-2 rounded-lg font-medium ${
-            activeTab === "subscriptions"
-              ? "button-bg text-white"
-              : "text-gray-600 hover:bg-gray-100"
-          }`}
-        >
-          Subscriptions
-        </button>
-      </div> */}
-
-      {/* Bookings Filter Buttons */}
-      {/* {activeTab === "bookings" && (
-        <div className="flex gap-2 mb-4">
+      {/* Flex container for tabs and date picker */}
+      <div className="flex justify-between items-center mb-6">
+        {/* Tabs for Bookings and Subscriptions */}
+        <div className="flex bg-white rounded-lg w-72 p-1">
           <button
-            onClick={() => setActiveFilter("received")}
-            className={`px-6 py-2 rounded-full font-medium transition ${
-              activeFilter === "received"
+            onClick={() => setActiveTab("bookings")}
+            className={`px-8 py-2 rounded-lg font-medium ${
+              activeTab === "bookings"
                 ? "button-bg text-white"
-                : "bg-white text-gray-600 hover:bg-gray-100"
+                : "text-gray-600 hover:bg-gray-100"
             }`}
           >
-            Received
+            Bookings
           </button>
           <button
-            onClick={() => setActiveFilter("refund")}
-            className={`px-6 py-2 rounded-full font-medium transition ${
-              activeFilter === "refund"
+            onClick={() => setActiveTab("subscriptions")}
+            className={`px-6 py-2 rounded-lg font-medium ${
+              activeTab === "subscriptions"
                 ? "button-bg text-white"
-                : "bg-white text-gray-600 hover:bg-gray-100"
+                : "text-gray-600 hover:bg-gray-100"
             }`}
           >
-            Refund
+            Subscriptions
           </button>
         </div>
-      )} */}
 
-      {/* Bookings Table */}
+       {/* Date Picker Filter (justified to the right) */}
+{/* Date Picker Filter (justified to the right) */}
+{activeTab === "bookings" && (
+  <div className="flex items-center justify-end space-x-6 w-full">
+    {/* Start Date */}
+    <div className="flex flex-col w-56">
+      <label className="text-sm font-semibold text-gray-700 mb-2">Start Date</label>
+      <DatePicker
+        selected={startDate}
+        onChange={(date) => setStartDate(date)}
+        dateFormat="yyyy-MM-dd"
+        className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 w-full"
+        placeholderText="Select start date"
+      />
+    </div>
+
+    {/* End Date */}
+    <div className="flex flex-col w-56">
+      <label className="text-sm font-semibold text-gray-700 mb-2">End Date</label>
+      <DatePicker
+        selected={endDate}
+        onChange={(date) => setEndDate(date)}
+        dateFormat="yyyy-MM-dd"
+        className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 w-full"
+        placeholderText="Select end date"
+        minDate={startDate}
+      />
+    </div>
+
+    {/* Apply Button */}
+    <button
+      onClick={handleDateChange}
+      className="px-6 mt-6 py-2 button-bg text-white font-semibold rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+    >
+      Apply Filter
+    </button>
+  </div>
+)}
+
+
+      </div>
+
+      {/* Conditionally render the content */}
       {activeTab === "bookings" && (
         <div className="bg-white rounded-2xl p-4">
           <div className="overflow-x-auto">
             <div className="text-left text-sm border-b bg-[#F9FAFA] p-2 rounded-lg">
-              <div className="grid grid-cols-6 text-left bg-[#DEF5FF] rounded-lg font-medium">
-                <div className="py-4 px-4">#</div>
-                <div className="py-4">Name</div>
-                <div className="py-4 px-4 ">Description</div>
-                <div className="py-4 px-4">Location</div>
-                <div className="py-4">Subscription Plan</div>
-                <div className="py-4 px-4">Join Date</div>
-                {/* <div className="py-4 px-4">Status</div> */}
-              </div>
+              <div className="grid grid-cols-7 text-left bg-[#DEF5FF] rounded-lg font-medium">
+  <div className="py-4 px-4">#</div>
+  <div className="py-4">Lister Name</div>
+  <div className="py-4 px-4">User Name</div>
+  <div className="py-4 px-4">Total Price</div>
+  <div className="py-4 px-4">Platform Fee</div>
+  <div className="py-4 px-4">Admin Commission</div>
+  <div className="py-4 px-4">Join Date</div>
+</div>
+
 
               {/* Render Fetched Transactions */}
-              {loading ? (
- Array(5)
-                  .fill(0)
-                  .map((_, index) => <ShimmerRow key={index} />)              ) : (
-                transactions.map((transaction, index) => (
-                  <div
-                    key={transaction._id}
-                    className="grid grid-cols-6 border-b last:border-none text-sm font-medium text-gray-700"
-                  >
-                    <div className="py-4 px-4">{index + 1}</div>
-                    <div className="py-4">{transaction.lister.name}</div>
-                    <div className="py-4 px-4 ">{transaction.user.name}</div>
-                    <div className="py-4 px-4">{transaction.lister.name}</div>
-                    <div className="py-4 px-4">${transaction.totalPrice}</div>
-                    <div className="py-4 px-4">
-                      {new Date(transaction.createdAt).toLocaleDateString()}
-                    </div>
-                    {/* <div className="py-4 px-4">
-                      <span
-                        className={`px-4 py-1.5 text-xs rounded-full font-medium ${
-                          transaction.totalPrice > 50
-                            ? "bg-green-500 text-white"
-                            : "bg-red-500 text-white"
-                        }`}
-                      >
-                        {transaction.totalPrice > 50 ? "High" : "Low"}
-                      </span>
-                    </div> */}
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
+              {/* Render Fetched Transactions */}
+{loading ? (
+  Array(5)
+    .fill(0)
+    .map((_, index) => <ShimmerRow key={index} />)
+) : (
+  transactions.map((transaction, index) => (
+    <div
+      key={transaction._id}
+      className="grid grid-cols-7 border-b last:border-none text-sm font-medium text-gray-700"
+    >
+      <div className="py-4 px-4">{index + 1}</div>
+      <div className="py-4">{transaction.lister.name}</div>
+      <div className="py-4 px-8">{transaction.user.name}</div>
+      <div className="py-4 px-8">${transaction.totalPrice}</div>
+      <div className="py-4 px-8">${transaction.platformFee}</div>
+      <div className="py-4 px-8">{transaction.adminCommission}% (${transaction.adminCommissionAmount})</div>
+      <div className="py-4 px-4">
+        {new Date(transaction.createdAt).toLocaleDateString()}
+      </div>
+    </div>
+  ))
+)}
 
-          {/* Pagination Controls */}
-          
-        </div>
-      )}
-
-      <div className="flex justify-end mt-4 gap-3">
-            <button
-              onClick={() => handlePageChange(pagination.currentPage - 1)}
-              disabled={pagination.currentPage <= 1}
-              className="px-4 py-2 bg-gray-300 rounded-md"
-            >
-              Previous
-            </button>
-            <div className="mt-2">
-              Page {pagination.currentPage} of {pagination.totalPages}
-            </div>
-            <button
-              onClick={() => handlePageChange(pagination.currentPage + 1)}
-              disabled={pagination.currentPage >= pagination.totalPages}
-              className="px-4 py-2 text-white bg-blue-500 rounded-md"
-            >
-              Next
-            </button>
-          </div>
-
-      {/* Subscriptions Table (unchanged) */}
-      {activeTab === "subscriptions" && (
-        <div className="bg-white p-6 rounded-xl overflow-auto">
-          <div className="w-full bg-[#F9FAFA] rounded-lg p-4">
-            <div className="grid grid-cols-7 text-left text-sm border-b bg-[#DEF5FF] py-4 rounded-lg">
-              <div className="ml-4">#</div>
-              <div className="col-span-1">Date</div>
-              <div className="col-span-1">Transaction ID</div>
-              <div className="col-span-1">Subscriber Name</div>
-              <div className="col-span-1">Subscription Plan</div>
-              <div className="col-span-1">Plan Duration</div>
-              <div className="col-span-1">Amount Paid</div>
-            </div>
-
-            <div className="grid gap-y-2">
-              {Array(10)
-                .fill(bookings[0])
-                .map((booking, idx) => (
-                  <div
-                    key={idx}
-                    className="grid grid-cols-7 items-center border-b py-6"
-                  >
-                    <div className="ml-4 col-span-1">{idx + 1}</div>
-                    <div className="col-span-1">12, Dec 2025</div>
-                    <div className="col-span-1">GH478961</div>
-                    <div className="col-span-1">Mike Smith</div>
-                    <div className="col-span-1">Basic Plan</div>
-                    <div className="col-span-1">1 Month</div>
-                    <div className="col-span-1">$9784</div>
-                  </div>
-                ))}
             </div>
           </div>
         </div>
       )}
+
+      {/* Render the RecentSubscription component when "Subscriptions" tab is active */}
+      {activeTab === "subscriptions" && <RecentSubscriptionTable />}
     </div>
   );
 };

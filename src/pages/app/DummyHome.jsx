@@ -228,6 +228,14 @@ const DummyHome = () => {
     return <div>{error}</div>;
   }
 
+  const formatNumber = (num) => {
+  if (num === null || num === undefined) return "—";
+  if (num >= 1_000_000_000) return (num / 1_000_000_000).toFixed(1) + "B";
+  if (num >= 1_000_000) return (num / 1_000_000).toFixed(1) + "M";
+  if (num >= 1_000) return (num / 1_000).toFixed(1) + "K";
+  return num.toString();
+};
+
   return (
     <div className="p-6 pt-2 space-y-6 h-screen">
       {/* Heading */}
@@ -235,27 +243,29 @@ const DummyHome = () => {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-        <div className="bg-white p-4 rounded-3xl text-left w-[209px] h-[112px]">
-          <h3 className="text-gray-500 text-sm">Total Listings</h3>
-          <p className="text-4xl font-semibold mt-3">{stats.totalListings}</p>
-        </div>
-        <div className="bg-white p-4 rounded-3xl text-left w-[209px] h-[112px]">
-          <h3 className="text-gray-500 text-[13px]">Active Users(Listers + Users)</h3>
-          <p className="text-4xl font-semibold mt-3">{stats.totalActiveUsers}</p>
-        </div>
-        <div className="bg-white p-4 rounded-3xl text-left w-[209px] h-[112px]">
-          <h3 className="text-gray-500 text-sm">Total Bookings</h3>
-          <p className="text-4xl font-semibold mt-3">{stats.totalBookings}</p>
-        </div>
-        <div className="bg-white p-4 rounded-3xl text-left w-[209px] h-[112px]">
-          <h3 className="text-gray-500 text-sm">Revenue</h3>
-          <p className="text-4xl font-semibold mt-3">${stats.totalRevenue}</p>
-        </div>
-        <div className="bg-white p-4 rounded-3xl text-left w-[209px] h-[112px]">
-          <h3 className="text-gray-500 text-sm">Reports Pending Review</h3>
-          <p className="text-4xl font-semibold mt-3">{stats.pendingReports}</p>
-        </div>
-      </div>
+  {[
+    { label: "Total Listings", value: stats.totalListings },
+    { label: "Active Users (Listers + Users)", value: stats.totalActiveUsers },
+    { label: "Total Bookings", value: stats.totalBookings },
+    { label: "Revenue", value: `$${formatNumber(stats.totalRevenue)}` },
+    { label: "Reports Pending Review", value: stats.pendingReports },
+  ].map((item, i) => (
+    <div
+      key={i}
+      className="bg-white p-4 rounded-3xl text-left w-[209px] h-[112px] overflow-hidden"
+    >
+      <h3 className="text-gray-500 text-[13px] leading-tight truncate">
+        {item.label}
+      </h3>
+      <p
+        className="text-4xl font-semibold mt-3 truncate"
+        title={item.value} // show full number on hover
+      >
+        {formatNumber(item.value)}
+      </p>
+    </div>
+  ))}
+</div>
 
       {/* Charts */}
       <div className="bg-white p-4 rounded-xl">

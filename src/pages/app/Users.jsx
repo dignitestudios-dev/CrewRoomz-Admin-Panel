@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
-import axios from "../../axios";  // Import your axios instance
+import axios from "../../axios"; // Your axios instance
 import { ErrorToast } from "../../components/global/Toaster"; // Your toast for errors
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const Users = () => {
   const [activeTab, setActiveTab] = useState("listers");
@@ -10,6 +12,10 @@ const Users = () => {
   const [page, setPage] = useState(1);
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [tempStartDate, setTempStartDate] = useState(null);
+const [tempEndDate, setTempEndDate] = useState(null);
 
   const UserShimmerRow = () => (
     <div className="grid grid-cols-10 border-b last:border-none animate-pulse">
@@ -41,13 +47,21 @@ const Users = () => {
     </div>
   );
 
-  // Fetch users from API
-  const fetchUsers = async (role = "lister", pageNumber = 1, search = "") => {
+  // Fetch users/listers from API
+  const fetchUsers = async (
+    role = "lister",
+    pageNumber = 1,
+    search = "",
+    startDateParam = null,
+    endDateParam = null
+  ) => {
     setLoading(true);
     try {
-      const response = await axios.get(`/admin/users`, {
-        params: { role, page: pageNumber, search }, // 👈 include search param
-      });
+      const params = { role, page: pageNumber, search };
+      if (startDateParam) params.startDate = startDateParam;
+      if (endDateParam) params.endDate = endDateParam;
+
+      const response = await axios.get(`/admin/users`, { params });
 
       if (response.data.success) {
         setUsers(response.data.data.users);
@@ -62,43 +76,47 @@ const Users = () => {
     }
   };
 
-  // Fetch users when component mounts or activeTab/page changes
+  // Fetch users when activeTab, page, searchTerm, or date changes
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
+      const start = startDate ? startDate.toISOString().split("T")[0] : null;
+      const end = endDate ? endDate.toISOString().split("T")[0] : null;
+
       if (activeTab === "listers") {
-        fetchUsers("lister", page, searchTerm);
+        fetchUsers("lister", page, searchTerm, start, end);
       } else if (activeTab === "users") {
-        fetchUsers("user", page, searchTerm);
+        fetchUsers("user", page, searchTerm, start, end);
       }
-    }, 500); // debounce for smoother searching
+    }, 500);
 
     return () => clearTimeout(delayDebounce);
-  }, [activeTab, page, searchTerm]);
+  }, [activeTab, page, searchTerm, startDate, endDate]);
 
   const handleRowClick = (user) => {
     const { _id, name, email, profilePicture } = user;
 
     if (activeTab === "listers") {
       navigate(`/app/lister-details/${_id}`, {
-        state: { userId: _id, name, email, profilePicture }
+        state: { userId: _id, name, email, profilePicture },
       });
     } else if (activeTab === "users") {
       navigate(`/app/user-details/${_id}`, {
-        state: { userId: _id, name, email, profilePicture }
+        state: { userId: _id, name, email, profilePicture },
       });
     }
   };
 
   const getGridCols = () => {
-    // Adjust grid columns based on active tab
-    return activeTab === "listers" ? "grid-cols-8" : "grid-cols-6";
+    return activeTab === "listers" ? "grid-cols-7" : "grid-cols-6";
   };
 
   return (
-    <div className="p-6 pt-2 min-h-screen ">
+    <div className="p-6 pt-2 min-h-screen">
       {/* Heading */}
       <div className="flex flex-col mt-4 md:flex-row md:justify-between md:items-center">
-        <h1 className="text-[36px] font-extrabold text-black mb-4">User Management</h1>
+        <h1 className="text-[36px] font-extrabold text-black mb-4">
+          User Management
+        </h1>
 
         {/* Tabs */}
         <div className="flex bg-white rounded-lg p-1 mb-4">
@@ -125,16 +143,64 @@ const Users = () => {
         </div>
       </div>
 
-      {/* Search Bar */}
-      <div className="flex justify-end items-center mb-4">
-        <input
-          type="text"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Search by name or email..."
-          className="w-full md:w-[350px] px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-400"
-        />
+      {/* Search & Date Filter */}
+              {/* <div className="bg-white p-4 pt-6 rounded-2xl mb-4"> */}
+
+      <div className="flex flex-col md:flex-row md:justify-between md:items-end mb-4 gap-4">
+        <div className="flex flex-col w-full md:w-[350px]">
+    <label className="text-sm font-semibold text-gray-700 mb-2">Search</label>
+    <input
+      type="text"
+      value={searchTerm}
+      onChange={(e) => setSearchTerm(e.target.value)}
+      placeholder="Search by name or email..."
+      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-400"
+    />
+  </div>
+
+        {/* Date Filter for both tabs */}
+     <div className="flex items-center justify-end space-x-6 w-full">
+  {/* Start Date */}
+  <div className="flex flex-col w-56">
+    <label className="text-sm font-semibold text-gray-700 mb-2">Start Date</label>
+    <DatePicker
+      selected={tempStartDate}
+      onChange={(date) => setTempStartDate(date)}
+      dateFormat="yyyy-MM-dd"
+      className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 w-full"
+      placeholderText="Select start date"
+    />
+  </div>
+
+  {/* End Date */}
+  <div className="flex flex-col w-56">
+    <label className="text-sm font-semibold text-gray-700 mb-2">End Date</label>
+    <DatePicker
+      selected={tempEndDate}
+      onChange={(date) => setTempEndDate(date)}
+      dateFormat="yyyy-MM-dd"
+      className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 w-full"
+      placeholderText="Select end date"
+      minDate={tempStartDate}
+    />
+  </div>
+
+  {/* Apply Button */}
+  <button
+    onClick={() => {
+      setStartDate(tempStartDate);
+      setEndDate(tempEndDate);
+      setPage(1); // reset to first page
+    }}
+    className="px-6 mt-6 py-2 button-bg text-white font-semibold rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+  >
+    Apply Filter
+  </button>
+</div>
+
+
       </div>
+      {/* </div> */}
 
       {/* Table */}
       <div className="bg-white rounded-2xl p-4">
@@ -142,22 +208,21 @@ const Users = () => {
           <div className="text-left text-sm border-b bg-[#F9FAFA] p-2 rounded-lg font-normal">
             {/* Table Header */}
             <div className={`grid ${getGridCols()} font-medium text-left bg-[#DEF5FF] rounded-lg`}>
-              <div className="py-4 px-4 ">#</div>
+              <div className="py-4 px-4">#</div>
               <div className="py-4 col-span-2">Lister Name</div>
-              <div className="py-4 px-4 ">Email</div>
+              <div className="py-4 px-4">Email</div>
 
-              {/* Conditionally render columns */}
               {activeTab === "listers" && (
                 <>
                   <div className="py-4 px-16 col-span-2">Total Properties</div>
-                  <div className="py-4 px-4">Location</div>
-                  <div className="py-4 ">Subscription Plan</div>
+                  {/* <div className="py-4 px-4">Location</div> */}
+                  <div className="py-4">Subscription Plan</div>
                 </>
               )}
               {activeTab === "users" && (
                 <>
-                  <div className="py-4 px-4 ">Join Date</div>
-                  <div className="py-4 px-4 ">Status</div>
+                  <div className="py-4 px-4">Join Date</div>
+                  <div className="py-4 px-4">Status</div>
                 </>
               )}
             </div>
@@ -165,11 +230,9 @@ const Users = () => {
             {/* Table Rows */}
             <div>
               {loading ? (
-                <>
-                  {Array(10).fill(0).map((_, index) => (
-                    <UserShimmerRow key={index} />
-                  ))}
-                </>
+                Array(10)
+                  .fill(0)
+                  .map((_, index) => <UserShimmerRow key={index} />)
               ) : users.length === 0 ? (
                 <div className="text-center p-4">No users found.</div>
               ) : (
@@ -182,40 +245,30 @@ const Users = () => {
                     <div className="py-4 px-4">{index + 1}</div>
                     <div className="py-4 col-span-2 flex items-center gap-2">
                       <img
-                        src={
-                          user.profilePicture ||
-                          "https://via.placeholder.com/40?text=No+Image"
-                        }
+                        src={user.profilePicture || "https://via.placeholder.com/40?text=No+Image"}
                         alt={user.name}
                         className="w-10 h-10 rounded-full object-cover"
                       />
                       {user.name}
                     </div>
-                    <div className="py-4 ">{user.email}</div>
+                    <div className="py-4">{user.email}</div>
 
-                    {/* Conditionally render row data */}
                     {activeTab === "listers" && (
                       <>
                         <div className="py-4 px-28 col-span-2">{user.totalListings}</div>
-                        <div className="py-4 px-4">
+                        {/* <div className="py-4 px-4">
                           {user.city || user.state ? `${user.city || ""} ${user.state || ""}` : "-"}
-                        </div>
-                        <div className="py-4 px-4">
-                          {user.activeSubscriptionPlan || "No Plan"}
-                        </div>
+                        </div> */}
+                        <div className="py-4 px-4">{user.activeSubscriptionPlan || "No Plan"}</div>
                       </>
                     )}
                     {activeTab === "users" && (
                       <>
-                        <div className="py-4 px-4">
-                          {new Date(user.createdAt).toLocaleDateString()}
-                        </div>
+                        <div className="py-4 px-4">{new Date(user.createdAt).toLocaleDateString()}</div>
                         <div className="py-4 px-4">
                           <span
                             className={`px-4 py-1.5 text-xs rounded-full font-medium ${
-                              user.isDeactivatedByAdmin
-                                ? "bg-red-500 text-white"
-                                : "bg-green-500 text-white"
+                              user.isDeactivatedByAdmin ? "bg-red-500 text-white" : "bg-green-500 text-white"
                             }`}
                           >
                             {user.isDeactivatedByAdmin ? "Inactive" : "Active"}
@@ -231,7 +284,7 @@ const Users = () => {
         </div>
       </div>
 
-      {/* Pagination Controls (optional) */}
+      {/* Pagination Controls */}
       <div className="flex justify-end mt-6 gap-2">
         <button
           onClick={() => setPage((p) => Math.max(p - 1, 1))}

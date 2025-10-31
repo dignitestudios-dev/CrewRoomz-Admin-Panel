@@ -17,12 +17,12 @@ const DummyNavbar = () => {
       <div className="flex items-center space-x-3 ml-auto">
         {/* User Avatar with Hover Effect */}
         <div className="relative group flex items-center space-x-3">
-          <img
+          {/* <img
             src="https://i.pravatar.cc/100?img=1" // Replace with actual user avatar
             alt="user-avatar"
             className="w-10 h-10 object-contain cursor-pointer rounded-full border-2 border-gray-300 transition-transform duration-300 ease-in-out transform group-hover:scale-110"
-          />
-          <h1 className="text-lg font-semibold text-gray-700">User</h1>
+          /> */}
+          <h1 className="text-lg font-semibold text-gray-700">Admin</h1>
 
           {/* Hovered Profile Options */}
           {/* 

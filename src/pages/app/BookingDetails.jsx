@@ -319,7 +319,7 @@ const BookingDetails = () => {
           <div className="flex justify-center text-2xl text-[#36C0EF]">
             {getAmenityIcon(a)}
           </div>
-          <p className="text-center mt-1 overflow-hidden text-ellipsis whitespace-nowrap">{a}</p>
+          <p className="text-center mt-1 overflow-auto ">{a}</p>
         </div>
       );
     })}
@@ -392,7 +392,7 @@ const BookingDetails = () => {
             <p className="text-sm text-gray-600">Host</p>
           </div>
         </div>
-        <button className="bg-[#E5F6FD] text-[#36C0EF] p-2 rounded-full">
+        {/* <button className="bg-[#E5F6FD] text-[#36C0EF] p-2 rounded-full">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="w-5 h-5"
@@ -402,7 +402,7 @@ const BookingDetails = () => {
           >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
-        </button>
+        </button> */}
       </div>
 
       {/* Guest */}
@@ -418,7 +418,7 @@ const BookingDetails = () => {
             <p className="text-sm text-gray-600">Guest</p>
           </div>
         </div>
-        <button className="bg-[#E5F6FD] text-[#36C0EF] p-2 rounded-full">
+        {/* <button className="bg-[#E5F6FD] text-[#36C0EF] p-2 rounded-full">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="w-5 h-5"
@@ -428,7 +428,7 @@ const BookingDetails = () => {
           >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
-        </button>
+        </button> */}
       </div>
     </div>
   </div>
@@ -459,10 +459,10 @@ const BookingDetails = () => {
       {/* Booking Summary */}
       {!isBillingDetailsVisible && (
         <div className="space-y-3 text-sm text-gray-700">
-          <div className="flex justify-between">
+          {/* <div className="flex justify-between">
             <p className="text-gray-600">Booking ID:</p>
             <p className="font-semibold text-gray-800">{data._id}</p>
-          </div>
+          </div> */}
           <div className="flex justify-between">
             <p className="text-gray-600">Bed Type:</p>
             <p>{bed[0]?.type || "N/A"}</p>
