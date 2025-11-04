@@ -15,7 +15,58 @@ const Users = () => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [tempStartDate, setTempStartDate] = useState(null);
-const [tempEndDate, setTempEndDate] = useState(null);
+  const [tempEndDate, setTempEndDate] = useState(null);
+  const [statsLoading, setStatsLoading] = useState(false);
+  
+
+  const [statsData, setStatsData] = useState({
+    totalUsers: 0,
+    totalListers: 0,
+    total: 0,
+  });
+
+  const fetchStats = async () => {
+        setStatsLoading(true);
+
+    try {
+      // Day stats
+      const dayRes = await axios.get("/admin/userRegistrationStats?filter=day");
+      // Month stats
+      const monthRes = await axios.get("/admin/userRegistrationStats?filter=month");
+
+      if (dayRes.data.success && monthRes.data.success) {
+        setStatsData({
+          dailyUsers: dayRes.data.data.totalUsers,
+          dailyListers: dayRes.data.data.totalListers,
+          monthlyUsers: monthRes.data.data.totalUsers,
+          monthlyListers: monthRes.data.data.totalListers,
+        });
+      } else {
+        ErrorToast("Failed to fetch user/lister stats");
+      }
+    } catch (error) {
+      console.error("Stats fetch error:", error);
+      ErrorToast("Error fetching stats. Please try again.");
+    }
+    finally {
+      setStatsLoading(false);
+      }
+  };
+
+  // Fetch stats when tab changes
+  useEffect(() => {
+    fetchStats();
+  }, [activeTab]);
+
+    // 🧮 Helper function to format large numbers
+  const formatNumber = (num) => {
+    if (num === null || num === undefined) return "—";
+    if (num >= 1_000_000_000) return (num / 1_000_000_000).toFixed(1) + "B";
+    if (num >= 1_000_000) return (num / 1_000_000).toFixed(1) + "M";
+    if (num >= 1_000) return (num / 1_000).toFixed(1) + "K";
+    return num.toString();
+  };
+
 
   const UserShimmerRow = () => (
     <div className="grid grid-cols-10 border-b last:border-none animate-pulse">
@@ -110,33 +161,89 @@ const [tempEndDate, setTempEndDate] = useState(null);
     return activeTab === "listers" ? "grid-cols-7" : "grid-cols-6";
   };
 
+  const stats = {
+    totalListings: 5342,
+    totalActiveUsers: 24567,
+    totalBookings: 11234,
+    totalRevenue: 1234567,
+    pendingReports: 42,
+  };
+
+  // Format number function
+  // const formatNumber = (num) => {
+  //   if (num === null || num === undefined) return "—";
+  //   if (num >= 1_000_000_000) return (num / 1_000_000_000).toFixed(1) + "B";
+  //   if (num >= 1_000_000) return (num / 1_000_000).toFixed(1) + "M";
+  //   if (num >= 1_000) return (num / 1_000).toFixed(1) + "K";
+  //   return num.toString();
+  // };
+
   return (
     <div className="p-6 pt-2 min-h-screen">
-      {/* Heading */}
-      <div className="flex flex-col mt-4 md:flex-row md:justify-between md:items-center">
-        <h1 className="text-[36px] font-extrabold text-black mb-4">
-          User Management
-        </h1>
+      <h1 className="text-[36px] font-extrabold text-black mb-4">
+        User Management
+      </h1>
 
+      {/* 🆕 Dynamic Stats Cards */}
+     {/* 🆕 Dynamic Stats Cards */}
+<div className="grid grid-cols-2 gap-4">
+  {statsLoading ? (
+    Array(2)
+      .fill(0)
+      .map((_, i) => (
+        <div
+          key={i}
+          className="bg-white p-4 rounded-3xl h-[112px] animate-pulse"
+        >
+          <div className="h-4 bg-gray-200 w-1/2 mb-3 rounded"></div>
+          <div className="h-6 bg-gray-300 w-1/3 rounded"></div>
+        </div>
+      ))
+  ) : activeTab === "listers" ? (
+    <>
+      <div className="bg-white p-4 rounded-3xl text-left w-auto h-[112px]">
+        <h3 className="text-gray-500 text-[13px]">New Lister signup per day</h3>
+        <p className="text-4xl font-semibold mt-3">
+          {formatNumber(statsData.dailyListers)}
+        </p>
+      </div>
+      <div className="bg-white p-4 rounded-3xl text-left w-auto h-[112px]">
+        <h3 className="text-gray-500 text-[13px]">New Lister signup per month</h3>
+        <p className="text-4xl font-semibold mt-3">
+          {formatNumber(statsData.monthlyListers)}
+        </p>
+      </div>
+    </>
+  ) : (
+    <>
+      <div className="bg-white p-4 rounded-3xl text-left w-auto h-[112px]">
+        <h3 className="text-gray-500 text-[13px]">New User signup per day</h3>
+        <p className="text-4xl font-semibold mt-3">
+          {formatNumber(statsData.dailyUsers)}
+        </p>
+      </div>
+      <div className="bg-white p-4 rounded-3xl text-left w-auto h-[112px]">
+        <h3 className="text-gray-500 text-[13px]">New User signup per month</h3>
+        <p className="text-4xl font-semibold mt-3">
+          {formatNumber(statsData.monthlyUsers)}
+        </p>
+      </div>
+    </>
+  )}
+</div>
+
+      <div className="flex flex-col mt-4 md:flex-row md:justify-end md:items-end">
         {/* Tabs */}
         <div className="flex bg-white rounded-lg p-1 mb-4">
           <button
             onClick={() => setActiveTab("listers")}
-            className={`px-14 py-2 rounded-lg font-medium ${
-              activeTab === "listers"
-                ? "button-bg text-white"
-                : "text-gray-600 hover:bg-gray-100"
-            }`}
+            className={`px-14 py-2 rounded-lg font-medium ${activeTab === "listers" ? "button-bg text-white" : "text-gray-600 hover:bg-gray-100"}`}
           >
             Listers
           </button>
           <button
             onClick={() => setActiveTab("users")}
-            className={`px-14 py-2 rounded-lg font-medium ${
-              activeTab === "users"
-                ? "button-bg text-white"
-                : "text-gray-600 hover:bg-gray-100"
-            }`}
+            className={`px-14 py-2 rounded-lg font-medium ${activeTab === "users" ? "button-bg text-white" : "text-gray-600 hover:bg-gray-100"}`}
           >
             Users
           </button>
@@ -144,63 +251,72 @@ const [tempEndDate, setTempEndDate] = useState(null);
       </div>
 
       {/* Search & Date Filter */}
-              {/* <div className="bg-white p-4 pt-6 rounded-2xl mb-4"> */}
-
       <div className="flex flex-col md:flex-row md:justify-between md:items-end mb-4 gap-4">
         <div className="flex flex-col w-full md:w-[350px]">
-    <label className="text-sm font-semibold text-gray-700 mb-2">Search</label>
-    <input
-      type="text"
-      value={searchTerm}
-      onChange={(e) => setSearchTerm(e.target.value)}
-      placeholder="Search by name or email..."
-      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-400"
-    />
-  </div>
+          <label className="text-sm font-semibold text-gray-700 mb-2">Search</label>
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search by name or email..."
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-400"
+          />
+        </div>
 
         {/* Date Filter for both tabs */}
-     <div className="flex items-center justify-end space-x-6 w-full">
-  {/* Start Date */}
-  <div className="flex flex-col w-56">
-    <label className="text-sm font-semibold text-gray-700 mb-2">Start Date</label>
-    <DatePicker
-      selected={tempStartDate}
-      onChange={(date) => setTempStartDate(date)}
-      dateFormat="yyyy-MM-dd"
-      className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 w-full"
-      placeholderText="Select start date"
-    />
-  </div>
+        <div className="flex items-center justify-end space-x-6 w-full">
+          {/* Start Date */}
+          <div className="flex flex-col w-56">
+            <label className="text-sm font-semibold text-gray-700 mb-2">Start Date</label>
+            <DatePicker
+              selected={tempStartDate}
+              onChange={(date) => setTempStartDate(date)}
+              dateFormat="yyyy-MM-dd"
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 w-full"
+              placeholderText="Select start date"
+            />
+          </div>
 
-  {/* End Date */}
-  <div className="flex flex-col w-56">
-    <label className="text-sm font-semibold text-gray-700 mb-2">End Date</label>
-    <DatePicker
-      selected={tempEndDate}
-      onChange={(date) => setTempEndDate(date)}
-      dateFormat="yyyy-MM-dd"
-      className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 w-full"
-      placeholderText="Select end date"
-      minDate={tempStartDate}
-    />
-  </div>
+          {/* End Date */}
+          <div className="flex flex-col w-56">
+            <label className="text-sm font-semibold text-gray-700 mb-2">End Date</label>
+            <DatePicker
+              selected={tempEndDate}
+              onChange={(date) => setTempEndDate(date)}
+              dateFormat="yyyy-MM-dd"
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 w-full"
+              placeholderText="Select end date"
+              minDate={tempStartDate}
+            />
+          </div>
 
-  {/* Apply Button */}
-  <button
-    onClick={() => {
-      setStartDate(tempStartDate);
-      setEndDate(tempEndDate);
-      setPage(1); // reset to first page
-    }}
-    className="px-6 mt-6 py-2 button-bg text-white font-semibold rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
-  >
-    Apply Filter
-  </button>
-</div>
+          {/* Apply Button */}
+          <button
+            onClick={() => {
+              setStartDate(tempStartDate);
+              setEndDate(tempEndDate);
+              setPage(1); // reset to first page
+            }}
+            className="px-6 mt-6 py-2 button-bg text-white font-semibold rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          >
+            Apply Filter
+          </button>
 
-
+          {/* Clear Filter Button */}
+          <button
+            onClick={() => {
+              setTempStartDate(null);
+              setTempEndDate(null);
+              setStartDate(null);
+              setEndDate(null);
+              setPage(1); // reset to first page
+            }}
+            className="px-6 mt-6 py-2 bg-gray-300 text-black font-semibold rounded-lg hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400"
+          >
+            Clear Filter
+          </button>
+        </div>
       </div>
-      {/* </div> */}
 
       {/* Table */}
       <div className="bg-white rounded-2xl p-4">
@@ -215,8 +331,7 @@ const [tempEndDate, setTempEndDate] = useState(null);
               {activeTab === "listers" && (
                 <>
                   <div className="py-4 px-16 col-span-2">Total Properties</div>
-                  {/* <div className="py-4 px-4">Location</div> */}
-                  <div className="py-4">Subscription Plan</div>
+                  <div className="py-4 px-4">{`Subscription Plan`}</div>
                 </>
               )}
               {activeTab === "users" && (
@@ -256,10 +371,7 @@ const [tempEndDate, setTempEndDate] = useState(null);
                     {activeTab === "listers" && (
                       <>
                         <div className="py-4 px-28 col-span-2">{user.totalListings}</div>
-                        {/* <div className="py-4 px-4">
-                          {user.city || user.state ? `${user.city || ""} ${user.state || ""}` : "-"}
-                        </div> */}
-                        <div className="py-4 px-4">{user.activeSubscriptionPlan || "No Plan"}</div>
+                        <div className="py-4 px-4">{user.activeSubscriptionPlan || "Freemium"}</div>
                       </>
                     )}
                     {activeTab === "users" && (

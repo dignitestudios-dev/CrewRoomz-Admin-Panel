@@ -503,19 +503,19 @@ const BookingDetails = () => {
               <p className="text-gray-600">Platform Fee:</p>
               <p className="font-semibold text-gray-800">${platformFee}</p>
             </div>
-            <div className="flex justify-between">
-              <p className="text-gray-600">Admin Commission:</p>
+            <div className="flex justify-between border-b pb-8">
+              <p className="text-gray-600 ">Admin Commission:</p>
               <p className="font-semibold text-gray-800">${adminCommissionAmount}</p>
             </div>
-            <div className="flex justify-between border-b pb-8">
+            <div className="flex justify-between ">
               <p className="text-gray-600">Total Price:</p>
               <p className="font-semibold text-gray-800">${totalPrice}</p>
             </div>
             {/* Display the calculated total amount */}
-            <div className="flex justify-between">
+            {/* <div className="flex justify-between">
               <p className="text-gray-600 font-semibold">Total Amount:</p>
               <p className="font-semibold text-gray-800">${totalAmount.toFixed(2)}</p>
-            </div>
+            </div> */}
           </div>
         </div>
       )}

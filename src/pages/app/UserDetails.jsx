@@ -90,6 +90,31 @@ const UserDetails = () => {
     navigate(`/app/user-details/${userId}?date=${date.toISOString()}`);
   };
 
+  const ShimmerBookingCard = () => {
+  return (
+    <div className="bg-white w-[327px] h-[265px] rounded-2xl overflow-hidden relative animate-pulse">
+      {/* Status Badge */}
+      <div className="absolute top-6 left-6 px-3 py-1 text-xs font-medium bg-gray-300 w-16 h-4 rounded-sm"></div>
+
+      {/* Image */}
+      <div className="flex justify-center mt-3 p-4 pt-0 pb-1">
+        <div className="w-full h-[156px] bg-gray-200 rounded-lg"></div>
+      </div>
+
+      {/* Info */}
+      <div className="px-6 pt-0 pb-4">
+        <div className="flex justify-between">
+          <div className="w-24 h-4 bg-gray-200 rounded"></div>
+          <div className="w-12 h-4 bg-gray-200 rounded"></div>
+        </div>
+
+        <p className="text-gray-500 text-sm flex items-center mt-2 w-28 h-4 bg-gray-200 rounded"></p>
+        <p className="text-sm mt-2 font-medium w-32 h-4 bg-gray-200 rounded"></p>
+      </div>
+    </div>
+  );
+};
+
   return (
     <div className="p-6 min-h-screen">
       <div className="flex items-center space-x-2">
@@ -118,7 +143,7 @@ const UserDetails = () => {
 
       {/* Calendar Icon and Date Picker */}
       <div className="mt-6">
-        <div className="flex flex-wrap gap-2 mb-4">
+        {/* <div className="flex flex-wrap gap-2 mb-4">
           <div className="ml-auto flex gap-2">
             <button 
               onClick={() => setIsCalendarOpen((prev) => !prev)} 
@@ -126,17 +151,17 @@ const UserDetails = () => {
               Calendar <IoCalendarOutline />
             </button>
           </div>
-        </div>
+        </div> */}
 
         {/* Date Picker - only shown when `isCalendarOpen` is true */}
-        {isCalendarOpen && (
+        {/* {isCalendarOpen && (
           <DatePicker
             selected={selectedDate}
             onChange={handleDateChange}
             inline
             dateFormat="yyyy-MM-dd"
           />
-        )}
+        )} */}
       </div>
 
       {/* Bookings Section */}

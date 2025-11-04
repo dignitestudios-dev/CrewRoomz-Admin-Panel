@@ -333,14 +333,6 @@ const RoomDetails = () => {
              }
            };
            
-           
-           
-           
-           
-          
-       
-           
-           
                  return (
                    <div
                      key={i}
