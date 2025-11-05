@@ -203,7 +203,7 @@ const Transactions = () => {
         </div>
 
         {/* ---------- 📆 Date Filters ---------- */}
-        {activeTab === "bookings" && (
+        {/* {activeTab === "bookings" && ( */}
           <div className="flex items-center justify-end space-x-6 w-full">
             <div className="flex flex-col w-56">
               <label className="text-sm font-semibold text-gray-700 mb-2">
@@ -246,7 +246,7 @@ const Transactions = () => {
               Clear Filter
             </button>
           </div>
-        )}
+        {/* )} */}
       </div>
 
       {/* ---------- 📜 Table Section ---------- */}
@@ -292,7 +292,12 @@ const Transactions = () => {
         </div>
       )}
 
-      {activeTab === "subscriptions" && <RecentSubscriptionTable />}
+{activeTab === "subscriptions" && (
+  <RecentSubscriptionTable
+    startDate={startDate}
+    endDate={endDate}
+  />
+)}
     </div>
   );
 };

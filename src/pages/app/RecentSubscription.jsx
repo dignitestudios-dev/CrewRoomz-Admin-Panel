@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "../../axios";
 import moment from "moment";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const RecentSubscription = () => {
   const [subscriptions, setSubscriptions] = useState([]);
@@ -16,6 +18,10 @@ const RecentSubscription = () => {
     platformDay: 0,
     platformMonth: 0,
   });
+
+  // 📅 Date filters
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
 
   // ---------- 📊 FETCH STATS ----------
   const fetchStats = async () => {
@@ -42,32 +48,53 @@ const RecentSubscription = () => {
   };
 
   // ---------- 💳 FETCH SUBSCRIPTIONS ----------
-  useEffect(() => {
-    const fetchSubscriptions = async () => {
-      try {
-        const response = await axios.get(`/admin/subscriptions?page=${currentPage}`);
-        if (response.data.success) {
-          setSubscriptions(response.data.data.subscriptions);
-          setTotalPages(response.data.data.pagination.totalPages);
-        } else {
-          setError("Failed to fetch subscriptions.");
-        }
-      } catch (err) {
-        console.error(err);
-        setError("Something went wrong while fetching subscriptions.");
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchSubscriptions = async (page = 1) => {
+    setLoading(true);
+    try {
+      let query = `/admin/subscriptions?page=${page}`;
+      if (startDate)
+        query += `&startDate=${startDate.toISOString().split("T")[0]}`;
+      if (endDate)
+        query += `&endDate=${endDate.toISOString().split("T")[0]}`;
 
-    fetchSubscriptions();
-    fetchStats(); // fetch stats on mount
+      const response = await axios.get(query);
+      if (response.data.success) {
+        setSubscriptions(response.data.data.subscriptions);
+        setTotalPages(response.data.data.pagination.totalPages);
+      } else {
+        setError("Failed to fetch subscriptions.");
+      }
+    } catch (err) {
+      console.error(err);
+      setError("Something went wrong while fetching subscriptions.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchSubscriptions(currentPage);
+    fetchStats();
   }, [currentPage]);
 
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
     }
+  };
+
+  // ---------- 📆 FILTER HANDLERS ----------
+  const handleApplyFilter = () => {
+    setCurrentPage(1);
+    fetchSubscriptions(1);
+  };
+
+  const handleClearFilter = () => {
+    // setStartDate(null);
+    // setEndDate(null);
+    // setCurrentPage(1);
+    // fetchSubscriptions(1);
+    window.location.reload();
   };
 
   // ---------- 🧮 FORMAT NUMBER ----------
@@ -120,6 +147,50 @@ const RecentSubscription = () => {
                 </p>
               </div>
             ))}
+      </div>
+
+      {/* ---------- 📅 Date Filters ---------- */}
+      <div className="flex items-center justify-end space-x-6 mb-6">
+        <div className="flex flex-col w-56">
+          <label className="text-sm font-semibold text-gray-700 mb-2">
+            Start Date
+          </label>
+          <DatePicker
+            selected={startDate}
+            onChange={(date) => setStartDate(date)}
+            dateFormat="yyyy-MM-dd"
+            className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 w-full"
+            placeholderText="Select start date"
+          />
+        </div>
+
+        <div className="flex flex-col w-56">
+          <label className="text-sm font-semibold text-gray-700 mb-2">
+            End Date
+          </label>
+          <DatePicker
+            selected={endDate}
+            onChange={(date) => setEndDate(date)}
+            dateFormat="yyyy-MM-dd"
+            className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 w-full"
+            placeholderText="Select end date"
+            minDate={startDate}
+          />
+        </div>
+
+        <button
+          onClick={handleApplyFilter}
+          className="px-6 mt-6 py-2 button-bg text-white font-semibold rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        >
+          Apply Filter
+        </button>
+
+        <button
+          onClick={handleClearFilter}
+          className="px-6 py-2 mt-6 bg-gray-300 text-black font-semibold rounded-lg hover:bg-gray-400"
+        >
+          Clear Filter
+        </button>
       </div>
 
       {/* ---------- 📜 Subscription Table ---------- */}
@@ -189,7 +260,7 @@ const RecentSubscription = () => {
           <button
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
-            className="bg-blue-500 text-white px-4 py-2 mx-2 rounded-md"
+            className="bg-gray-200 text-gray-600 px-4 py-2 mx-2 rounded-md"
           >
             Next
           </button>
