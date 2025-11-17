@@ -28,7 +28,7 @@ export const sidebarData = [
     link: "/app/bookings",
   },
     {
-    title: "Report An Issue",
+    title: "Reported Issues",
     icon: <MessageSquareWarning />,
     link: "/app/reported-issues",
   },

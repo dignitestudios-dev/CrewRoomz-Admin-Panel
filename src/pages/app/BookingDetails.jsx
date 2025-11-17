@@ -171,6 +171,7 @@ const BookingDetails = () => {
 
 
   const totalAmount = parseFloat(platformFee) + parseFloat(adminCommissionAmount) + parseFloat(totalPrice);
+  const commissionPercentage = (adminCommissionAmount / totalPrice) * 100;
 
 
   return (
@@ -495,30 +496,31 @@ const BookingDetails = () => {
       )}
 
       {/* Billing Details */}
-      {isBillingDetailsVisible && (
-        <div className="bg-white rounded-2xl mt-6">
-          {/* <h3 className="font-semibold text-gray-800 mb-4">Financial Details</h3> */}
-          <div className="space-y-3 text-sm text-gray-700">
-            <div className="flex justify-between">
-              <p className="text-gray-600">Platform Fee:</p>
-              <p className="font-semibold text-gray-800">${platformFee}</p>
-            </div>
-            <div className="flex justify-between border-b pb-8">
-              <p className="text-gray-600 ">Admin Commission:</p>
-              <p className="font-semibold text-gray-800">${adminCommissionAmount}</p>
-            </div>
-            <div className="flex justify-between ">
-              <p className="text-gray-600">Total Price:</p>
-              <p className="font-semibold text-gray-800">${totalPrice}</p>
-            </div>
-            {/* Display the calculated total amount */}
-            {/* <div className="flex justify-between">
-              <p className="text-gray-600 font-semibold">Total Amount:</p>
-              <p className="font-semibold text-gray-800">${totalAmount.toFixed(2)}</p>
-            </div> */}
-          </div>
-        </div>
-      )}
+     {isBillingDetailsVisible && (
+  <div className="bg-white rounded-2xl mt-6">
+    <div className="space-y-3 text-sm text-gray-700">
+      <div className="flex justify-between">
+        <p className="text-gray-600">Platform Fee:</p>
+        <p className="font-semibold text-gray-800">${platformFee}</p>
+      </div>
+      <div className="flex justify-between ">
+        <p className="text-gray-600">Admin Commission:</p>
+        <p className="font-semibold text-gray-800">${adminCommissionAmount}</p>
+      </div>
+      <div className="flex justify-between border-b pb-8">
+        <p className="text-gray-600">Admin Commission Percentage:</p>
+        <p className="font-semibold text-gray-800">
+          {totalPrice > 0 ? ((adminCommissionAmount / totalPrice) * 100).toFixed(2) : '0.00'}%
+        </p>
+      </div>
+      <div className="flex justify-between">
+        <p className="text-gray-600">Total Price:</p>
+        <p className="font-semibold text-gray-800">${totalPrice}</p>
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
 </div>
 
