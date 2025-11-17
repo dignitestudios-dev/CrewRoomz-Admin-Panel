@@ -275,7 +275,10 @@ const RoomDetails = () => {
             </p>
 
             {/* Amenities */}
+                <h3 className="font-semibold text-gray-800 text-[16px] mt-2">Amenities</h3>
+
             <div className="flex gap-4 mt-2 flex-wrap">
+              
                {roomData.amenities?.slice(0, 6).map((a, i) => {
                  // Map the amenity to its icon
                  const getAmenityIcon = (amenity) => {
@@ -334,15 +337,16 @@ const RoomDetails = () => {
            };
            
                  return (
+                  
                    <div
-                     key={i}
-                     className="flex flex-col items-center text-sm text-gray-600 w-[84px] rounded-xl bg-white p-4"
-                   >
-                     <div className="flex justify-center text-2xl text-[#36C0EF]">
-                       {getAmenityIcon(a)}
-                     </div>
-                     <p className="text-center mt-1 overflow-hidden text-ellipsis whitespace-nowrap">{a}</p>
-                   </div>
+          key={i}
+          className="flex flex-col items-center text-sm text-gray-600 w-[84px] rounded-xl bg-white p-4"
+        >
+          <div className="flex justify-center text-2xl text-[#36C0EF]">
+            {getAmenityIcon(a)}
+          </div>
+          <p className="text-center mt-1 overflow-auto ">{a}</p>
+        </div>
                  );
                })}
              </div>

@@ -202,13 +202,13 @@ const Users = () => {
   ) : activeTab === "listers" ? (
     <>
       <div className="bg-white p-4 rounded-3xl text-left w-auto h-[112px]">
-        <h3 className="text-gray-500 text-[13px]">New Lister signup per day</h3>
+        <h3 className="text-gray-500 text-[13px]">New Lister signup today</h3>
         <p className="text-4xl font-semibold mt-3">
           {formatNumber(statsData.dailyListers)}
         </p>
       </div>
       <div className="bg-white p-4 rounded-3xl text-left w-auto h-[112px]">
-        <h3 className="text-gray-500 text-[13px]">New Lister signup per month</h3>
+        <h3 className="text-gray-500 text-[13px]">New Lister signup this month</h3>
         <p className="text-4xl font-semibold mt-3">
           {formatNumber(statsData.monthlyListers)}
         </p>

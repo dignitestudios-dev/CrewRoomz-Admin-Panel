@@ -119,8 +119,8 @@ const handleDeactivateUser = async () => {
 
     if (response.data.success) {
       setIsDeactivateModalOpen(false);
-      fetchUserDetails(activeTab, activeFilter, 1);
-     SuccessToast("User deactivated successfully");
+      // fetchUserDetails(activeTab, activeFilter, 1);
+     SuccessToast("Lister deactivated successfully");
       navigate(-1);
     } else {
       ErrorToast(response.data.message || "Failed to deactivate user");
@@ -181,7 +181,7 @@ const handleDeactivateUser = async () => {
         </div>
 
         {/* Filters */}
-        <div className="flex flex-wrap gap-2 mb-4">
+        <div className="flex flex-wrap gap-2 mb-4 ">
           {["private", "multi", "semi-private"].map((filter) => (
             <button
               key={filter}
@@ -189,7 +189,7 @@ const handleDeactivateUser = async () => {
                 setPage(1);
                 setActiveFilter(filter.toLowerCase());
               }}
-              className={`px-4 py-1.5 rounded-full border text-sm ${
+              className={`px-4 py-1.5 rounded-full border text-sm  capitalize ${
                 activeFilter === filter.toLowerCase()
                   ? "button-bg text-white border-sky-500"
                   : "bg-blue-100 border border-[#36C0EF] text-black hover:text-white hover:bg-[#36C0EF]"
