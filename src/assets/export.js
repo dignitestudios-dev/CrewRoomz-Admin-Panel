@@ -39,6 +39,12 @@ import teaIcon from "./teaIcon.png";
 import tvIcon from "./tvIcon.png";
 import wifiIcon from "./wifiIcon.png";
 import washingIcon from "./washingIcon.png";
+import dishwasher from "./dishwasher.png";
+import fridge from "./fridge.png";
+import freezer from "./freezer.png";
+import airfryer from "./airfryer.png";
+import steamer from "./steamer.png";
+import towels from "./towels.png";
 // export {
 //     FILENAME(PASCALCASE)
 // }
@@ -63,4 +69,5 @@ export { Logo, NoInternetImage, audi, hyundai, van, loginbg, sidebar,login,backg
   teaIcon,
   tvIcon,
   wifiIcon,
-  washingIcon };
+  washingIcon, dishwasher, fridge, freezer, airfryer, steamer, towels,
+ };

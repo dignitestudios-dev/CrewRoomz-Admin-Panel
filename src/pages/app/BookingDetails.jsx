@@ -35,6 +35,12 @@ import {
   tvIcon,
   wifiIcon,
   washingIcon,
+  towels,
+  dishwasher,
+  fridge,
+  freezer,
+  airfryer,
+  steamer,
 } from '../../assets/export'; // Update the path if necessary
 
 
@@ -300,6 +306,18 @@ const BookingDetails = () => {
       return <img src={teaIcon} alt="Tea" className="w-6 h-6" />;
     case "TV":
       return <img src={tvIcon} alt="TV" className="w-6 h-6" />;
+    case "Towels":
+      return <img src={towels} alt="Towels" className="w-6 h-6" />; 
+    case "Dishwasher":
+      return <img src={dishwasher} alt="Dishwasher" className="w-6 h-6" />;
+    case "Fridge":
+      return <img src={fridge} alt="Fridge" className="w-6 h-6" />;
+    case "Freezer":
+      return <img src={freezer} alt="Freezer" className="w-6 h-6" />;
+    case "Airfryer": 
+      return <img src={airfryer} alt="Airfryer" className="w-6 h-6" />;
+    case "Steamer":
+      return <img src={steamer} alt="Steamer" className="w-6 h-6" />;
     default:
       return <img src={wifiIcon} alt="Default" className="w-6 h-6" />; // Default icon in case the amenity is not recognized
   }
