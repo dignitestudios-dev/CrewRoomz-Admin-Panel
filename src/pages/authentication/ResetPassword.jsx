@@ -1,66 +1,101 @@
-import React from "react";
-import { useNavigate } from "react-router";  // Import useNavigate from react-router-dom
-import { FiLoader } from "react-icons/fi";
+import React, { useState } from "react";
+import { useNavigate } from "react-router";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
-import { Logo } from "../../assets/export";
+import { login, Logo } from "../../assets/export";
+import { SuccessToast, ErrorToast } from "../../components/global/Toaster";
+import axios from "../../axios";
 
 const ResetPassword = () => {
-  const navigate = useNavigate();  // Initialize the useNavigate hook
+  const navigate = useNavigate();
 
-  const handleLoginClick = () => {
-    // Navigate to the dashboard after login button click
-    navigate("/");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleUpdatePassword = async () => {
+    if (!password || !confirmPassword) {
+      ErrorToast("Please fill all fields.");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      ErrorToast("Passwords do not match.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      await axios.post("/auth/verifyForgotOTP", {
+        password,
+        confirmPassword,
+      });
+
+      SuccessToast("Password updated successfully.");
+      navigate("/");
+    } catch (error) {
+      const message =
+        error?.response?.data?.message || "Failed to reset password.";
+      ErrorToast(message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="w-full border-8 border-[#0893F0] h-auto flex flex-col items-center p-6 justify-center md:w-[499px] md:h-[548px]  rounded-[19px] bg-white">
-      <img src={Logo} alt="orange_logo" className="w-[148.4px]" />
-      <div className="w-auto flex flex-col mt-4 justify-center items-center">
-        <h2 className="text-[32px] font-bold leading-[48px]">Reset Password</h2>
-        <p className="text-[18px] font-normal text-center leading-[27px] text-[#3C3C43D9]">
+<div
+  className="w-full h-auto flex flex-col items-center p-6 backdrop-blur-lg md:w-[630px] md:h-[636px] rounded-[19px] bg-cover bg-center"
+  style={{
+    backgroundImage: `url(${login})`,
+  }}
+>      <img src={Logo} alt="orange_logo" className="w-[148.4px]" />
+
+      <div className="mt-4 text-center">
+        <h2 className="text-[32px] font-bold text-white">Reset Password</h2>
+        <p className="text-[18px] text-white">
           Please enter your new password to continue
         </p>
       </div>
 
-      <form className="w-full md:w-[393px] mt-5 flex flex-col justify-start items-start gap-4">
-        <div className="w-full h-auto flex flex-col justify-start items-start gap-1">
+      <form className="w-full md:w-[393px] mt-5 flex flex-col gap-4">
+        {/* Password */}
+        <div className="relative h-[49px] border rounded-[8px] bg-[#F8F8F899]">
           <input
-            type="text"
-            id="email"
-            name="email"
-            className="w-full h-[49px] border-[0.8px] bg-[#F8F8F899] outline-none rounded-[8px] placeholder:text-[#959393] text-[#262626] px-3 text-[16px] font-normal leading-[20.4px] border-[#D9D9D9]"
-            placeholder="Email Address"
+            type={showPassword ? "text" : "password"}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="New Password"
+            className="w-[90%] h-full placeholder:text-gray-200  text-white bg-transparent outline-none px-3"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="w-[10%]  absolute right-0 top-0 h-full flex items-center justify-center text-[#959393]"
+          >
+            {showPassword ? <FaRegEye /> : <FaRegEyeSlash />}
+          </button>
+        </div>
+
+        {/* Confirm Password */}
+        <div className="h-[49px] border rounded-[8px] bg-[#F8F8F899] text-white placeholder:text-white">
+          <input
+            type={showPassword ? "text" : "password"}
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            placeholder="Confirm Password"
+            className="w-full h-full placeholder:text-gray-200 text-white bg-transparent outline-none px-3"
           />
         </div>
 
-        <div className="w-full h-auto flex flex-col justify-start items-start gap-1">
-          <div className="h-[49px] flex justify-start bg-[#F8F8F899] items-start w-full relative border-[0.8px] border-[#D9D9D9] rounded-[8px]">
-            <input
-              type="password"
-              id="password"
-              name="password"
-              className="w-[90%] h-full bg-transparent rounded-l-[8px] placeholder:text-[#959393] outline-none text-[#262626] px-3 text-[16px] font-normal leading-[20.4px]"
-              placeholder="Password"
-            />
-            <button
-              type="button"
-              className="w-[10%] h-full rounded-r-[8px] bg-transparent text-md text-[#959393] flex items-center justify-center"
-            >
-              <FaRegEyeSlash />
-            </button>
-          </div>
-        </div>
-
-        
-
+        {/* Submit */}
         <button
-          type="button"  // Change from <NavLink> to <button> with onClick
-          onClick={handleLoginClick}  // Trigger the navigate function
-          className="w-full h-[49px] rounded-[8px] bg-[#0893F0] text-white flex gap-2 items-center justify-center text-md font-medium"
+          type="button"
+          onClick={handleUpdatePassword}
+          disabled={loading}
+          className="w-full h-[49px] rounded-[8px] bg-[#0893F0] text-white font-medium disabled:opacity-60"
         >
-          <span>Update</span>
-          {/* Optionally show a loading spinner */}
-          {/* <FiLoader className="animate-spin text-lg" /> */}
+          {loading ? "Updating..." : "Update"}
         </button>
       </form>
     </div>

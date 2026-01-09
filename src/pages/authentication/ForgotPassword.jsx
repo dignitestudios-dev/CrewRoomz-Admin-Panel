@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router";
 import axios from "../../axios";
 import { FiLoader } from "react-icons/fi";
-import { Logo } from "../../assets/export";
+import { login, Logo } from "../../assets/export";
 import { SuccessToast, ErrorToast } from "../../components/global/Toaster";
 
 const ForgotPassword = () => {
@@ -20,7 +20,8 @@ const ForgotPassword = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post("/admin/forgetPassword", { email });
+      const response = await axios.post("/auth/forgot", { email,
+    role: "admin", });
 
       SuccessToast("OTP sent to your email.");
       
@@ -37,12 +38,16 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="w-full border-8 border-[#0893F0] h-auto flex flex-col items-center p-6 justify-center md:w-[499px] md:h-[548px] rounded-[19px] bg-white">
-      <img src={Logo} alt="orange_logo" className="w-[148.4px]" />
+<div
+  className="w-full h-auto flex flex-col items-center p-6 backdrop-blur-lg md:w-[630px] md:h-[636px] rounded-[19px] bg-cover bg-center"
+  style={{
+    backgroundImage: `url(${login})`,
+  }}
+>      <img src={Logo} alt="orange_logo" className="w-[148.4px]" />
       
       <div className="w-auto flex flex-col mt-4 justify-center items-center">
-        <h2 className="text-[32px] font-bold leading-[48px]">Forgot Password</h2>
-        <p className="text-[18px] font-normal text-center leading-[27px] text-[#3C3C43D9]">
+        <h2 className="text-[32px] mt-8  font-bold leading-[48px] text-white">Forgot Password</h2>
+        <p className="text-[18px] font-normal text-center leading-[27px] text-white">
           Please enter your email to continue
         </p>
       </div>
@@ -55,7 +60,7 @@ const ForgotPassword = () => {
             name="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full h-[49px] border-[0.8px] bg-[#F8F8F899] outline-none rounded-[8px] placeholder:text-[#959393] text-[#262626] px-3 text-[16px] font-normal leading-[20.4px] border-[#D9D9D9]"
+            className="w-full h-[49px] border-[0.8px] bg-[#F8F8F899] text-white outline-none rounded-[8px] placeholder:text-gray-200 px-3 text-[16px] font-normal leading-[20.4px] border-[#D9D9D9]"
             placeholder="Email Address"
             required
           />

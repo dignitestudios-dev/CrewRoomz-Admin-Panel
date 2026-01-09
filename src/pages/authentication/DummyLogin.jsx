@@ -168,7 +168,7 @@ const handleLogin = async () => {
           {passwordError && <p className="text-red-500 text-sm mt-1">{passwordError}</p>}
         </div>
 
-        {/* <div className="w-full -mt-1 flex items-center justify-end">
+        <div className="w-full -mt-1 flex items-center justify-end">
           <button
             type="button"
             onClick={handleForgotClick}
@@ -176,7 +176,7 @@ const handleLogin = async () => {
           >
             Forgot Password?
           </button>
-        </div> */}
+        </div>
 
         <button
           type="button"
