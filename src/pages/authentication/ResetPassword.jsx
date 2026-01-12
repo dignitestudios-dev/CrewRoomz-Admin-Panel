@@ -44,7 +44,7 @@ const handleUpdatePassword = async () => {
     setLoading(true);
 
    await axios.post(
-  "/auth/resetPassword",
+  "https://dev.crewroomz.com/auth/resetPassword",
   {
     email,
     password,
