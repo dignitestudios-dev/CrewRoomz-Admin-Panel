@@ -44,7 +44,7 @@ const handleUpdatePassword = async () => {
     setLoading(true);
 
    await axios.post(
-  "/auth/verifyForgotOTP",
+  "/auth/resetPassword",
   {
     email,
     password,
