@@ -46,10 +46,10 @@ const handleUpdatePassword = async () => {
    await axios.post(
   "https://dev.crewroomz.com/auth/resetPassword",
   {
-    email,
+    // email,
     password,
     confirmPassword,
-    role: "admin",
+    // role: "admin",
   },
   {
     headers: {
