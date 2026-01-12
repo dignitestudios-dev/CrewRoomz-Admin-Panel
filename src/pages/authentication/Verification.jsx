@@ -6,7 +6,7 @@ import axios from "../../axios";
 
 const Verification = () => {
   const navigate = useNavigate();
-  const [otp, setOtp] = useState(["", "", "", ""]);
+  const [otp, setOtp] = useState(["", "", "", "", "",""]);
   const [loading, setLoading] = useState(false);
 
   const handleChange = (value, index) => {
@@ -16,7 +16,7 @@ const Verification = () => {
       setOtp(newOtp);
 
       // Auto focus next
-      if (value && index < 3) {
+      if (value && index < 5) {
         document.getElementById(`otp-${index + 1}`)?.focus();
       }
     }
@@ -31,7 +31,7 @@ const Verification = () => {
       return;
     }
 
-    if (otpValue.length !== 4) {
+    if (otpValue.length !== 6) {
       ErrorToast("Please enter a valid OTP.");
       return;
     }
@@ -39,14 +39,14 @@ const Verification = () => {
     try {
       setLoading(true);
 
-      await axios.post("/auth/verifyForgotOTP", {
+      const response = await axios.post("/auth/verifyForgotOTP", {
         email,
         otp: Number(otpValue),
         role: "admin", // change to "admin" if needed
       });
 
       SuccessToast("OTP verified successfully.");
-      navigate("/auth/reset-password");
+      navigate("/auth/reset-password", {state: { token:response?.data?.data?.token }});
     } catch (error) {
       const message =
         error?.response?.data?.message || "Invalid or expired OTP.";

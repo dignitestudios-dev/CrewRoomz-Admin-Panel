@@ -1,47 +1,78 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { login, Logo } from "../../assets/export";
 import { SuccessToast, ErrorToast } from "../../components/global/Toaster";
-import axios from "../../axios";
+import axios from "axios";
 
 const ResetPassword = () => {
   const navigate = useNavigate();
+
+  const location = useLocation();
+  const token = location.state?.token;
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleUpdatePassword = async () => {
-    if (!password || !confirmPassword) {
-      ErrorToast("Please fill all fields.");
-      return;
-    }
+const handleUpdatePassword = async () => {
+  if (!password || !confirmPassword) {
+    ErrorToast("Please fill all fields.");
+    return;
+  }
 
-    if (password !== confirmPassword) {
-      ErrorToast("Passwords do not match.");
-      return;
-    }
+  if (password !== confirmPassword) {
+    ErrorToast("Passwords do not match.");
+    return;
+  }
 
-    try {
-      setLoading(true);
+  const email = localStorage.getItem("resetEmail");
 
-      await axios.post("/auth/verifyForgotOTP", {
-        password,
-        confirmPassword,
-      });
+  if (!email) {
+    ErrorToast("Email not found. Please restart the reset process.");
+    return;
+  }
 
-      SuccessToast("Password updated successfully.");
-      navigate("/");
-    } catch (error) {
-      const message =
-        error?.response?.data?.message || "Failed to reset password.";
-      ErrorToast(message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  if (!token) {
+    ErrorToast("Please retry.");
+    navigate("/auth/forgot-password");
+    return;
+  }
+
+  try {
+    setLoading(true);
+
+   await axios.post(
+  "/auth/verifyForgotOTP",
+  {
+    email,
+    password,
+    confirmPassword,
+    role: "admin",
+  },
+  {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }
+);
+
+    SuccessToast("Password updated successfully.");
+
+    // Optional: clean up
+    localStorage.removeItem("resetEmail");
+
+    navigate("/");
+  } catch (error) {
+    const message =
+      error?.response?.data?.message || "Failed to reset password.";
+    ErrorToast(message);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
 <div
