@@ -53,7 +53,9 @@ const handleUpdatePassword = async () => {
   },
   {
     headers: {
-      Authorization: `Bearer ${token}`,
+    devicemodel: navigator.userAgent,
+    deviceuniqueid: navigator.userAgent,
+    Authorization: `Bearer ${token}`,
     },
   }
 );
