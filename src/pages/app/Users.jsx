@@ -337,7 +337,7 @@ const Users = () => {
               )}
               {activeTab === "users" && (
                 <>
-                   <div className="py-4 col-span-2">User Name</div>
+                   <div className="py-4 col-span-2">Seeker Name</div>
               <div className="py-4 px-4">Email</div>
                   <div className="py-4 px-4">Join Date</div>
                   <div className="py-4 px-4">Status</div>
