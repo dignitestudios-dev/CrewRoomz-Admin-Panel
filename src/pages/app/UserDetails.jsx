@@ -12,8 +12,8 @@ const UserDetails = () => {
   const { userId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
-  const { name: stateName, email: stateEmail, profilePicture: stateProfilePicture } = location.state || {};
-
+  const { name: stateName, email: stateEmail, profilePicture: stateProfilePicture,isDeactivatedByAdmin } = location.state || {};
+ console.log("State data:", location.state);
   const [activeTab, setActiveTab] = useState("private");
   const [activeFilter, setActiveFilter] = useState("all");
   const [user, setUser] = useState(null);
@@ -157,8 +157,8 @@ const handleDeactivateUser = async () => {
             <p className="text-gray-500">{stateEmail || user?.email || "-"}</p>
           </div>
         </div>
-        <button onClick={openDeactivateModal} className="bg-[#DC1D00] text-white px-6 py-4 rounded-full font-medium hover:bg-red-700 mt-4 md:mt-0">
-          Deactivate
+        <button onClick={openDeactivateModal} className={`${isDeactivatedByAdmin ? "bg-green-500 hover:bg-green-600" : "bg-red-500 hover:bg-red-600"} text-white px-6 py-4 rounded-full font-medium mt-4 md:mt-0`}>
+         {isDeactivatedByAdmin?"Activate":"Deactivate"} 
         </button>
       </div>
 
