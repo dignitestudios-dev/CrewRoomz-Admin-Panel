@@ -325,13 +325,12 @@ const Users = () => {
             {/* Table Header */}
             <div className={`grid ${getGridCols()} font-medium text-left bg-[#DEF5FF] rounded-lg`}>
               <div className="py-4 px-4">#</div>
-              <div className="py-4 col-span-2">Lister Name</div>
-              <div className="py-4 px-4">Email</div>
+             
 
               {activeTab === "listers" && (
                 <>
-
-
+                   <div className="py-4 col-span-2">Lister Name</div>
+              <div className="py-4 px-4">Email</div>
                   <div className="py-4 px-16 col-span-2">Total Properties</div>
                   <div className="py-4 px-4">{`Subscription Plan`}</div>
                   <div className="py-4 px-4">Status</div>
@@ -339,6 +338,8 @@ const Users = () => {
               )}
               {activeTab === "users" && (
                 <>
+                   <div className="py-4 col-span-2">Seeker Name</div>
+              <div className="py-4 px-4">Email</div>
                   <div className="py-4 px-4">Join Date</div>
                   <div className="py-4 px-4">Status</div>
                 </>
