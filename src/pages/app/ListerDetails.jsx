@@ -120,7 +120,7 @@ const ListerDetails = () => {
       if (response.data.success) {
         setIsDeactivateModalOpen(false);
         // fetchUserDetails(activeTab, activeFilter, 1);
-        SuccessToast("Lister deactivated successfully");
+        SuccessToast("Lister status updated successfully");
         navigate(-1);
       } else {
         ErrorToast(response.data.message || "Failed to deactivate user");
@@ -281,9 +281,10 @@ const ListerDetails = () => {
         <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-[471px] h-[347px] flex flex-col items-center">
             <img src={warning} alt="Warning" className="w-[107px] h-[107px] mb-4" />
-            <h2 className="text-[24px] font-bold mt-2 mb-4">Deactivate</h2>
+            <h2 className="text-[24px] font-bold mt-2 mb-4">          {isDeactivatedByAdmin ? "Activate" : "Deactivate"}
+</h2>
             <p className="text-center text-[16px] text-gray-700 mb-6">
-              Are you sure you want to deactivate this account?
+              Are you sure you want to perform this action?
             </p>
 
             <div className="mt-4 flex justify-end w-full">
@@ -301,7 +302,7 @@ const ListerDetails = () => {
                     : "button-bg hover:opacity-90"
                   }`}
               >
-                {isDeactivating ? "Deactivating..." : "Yes"}
+                {isDeactivating ? "Updating..." : "Yes"}
               </button>
 
             </div>
