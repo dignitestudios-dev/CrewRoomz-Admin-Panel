@@ -275,7 +275,7 @@
             >
               <option className="text-black" value="completed">Completed</option>
               <option className="text-black" value="cancelled">Cancelled</option>
-              <option className="text-black" value="pending">Pending</option>
+              <option className="text-black" value="pending">Upcoming</option>
             </select>
           </div>
         </div>
@@ -322,18 +322,18 @@
                     {new Date(booking.endDate).toLocaleDateString()}
                   </div>
                   <div className="py-4 px-4">
-                    <span
-                      className={`px-4 py-1.5 text-xs rounded-full font-medium ${
-                        booking.bookingStatus === "completed"
-                          ? "bg-green-500 text-white"
-                          : booking.bookingStatus === "pending"
-                          ? "bg-yellow-500 text-white"
-                          : "bg-red-500 text-white"
-                      }`}
-                    >
-                      {booking.bookingStatus}
-                    </span>
-                  </div>
+  <span
+    className={`px-4 py-1.5 text-xs rounded-full font-medium ${
+      booking.bookingStatus === "completed"
+        ? "bg-green-500 text-white"
+        : booking.bookingStatus === "pending"
+        ? "bg-yellow-500 text-white"
+        : "bg-red-500 text-white"
+    }`}
+  >
+    {booking.bookingStatus === "pending" ? "upcoming" : booking.bookingStatus}
+  </span>
+</div>
                 </div>
               ))
             )}
