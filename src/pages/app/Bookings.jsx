@@ -193,7 +193,7 @@
             {/* 🧍‍♀️ Booking User Stats */}
             <div className="bg-white p-4 rounded-3xl">
               <h3 className="text-gray-500 text-[13px]">
-                Booked/Total Seekers Per Day
+                Total Seekers Per Day
               </h3>
               <p className="text-2xl font-semibold mt-3">
                 {formatNumber(statsData.bookedSeekersDay)} /{" "}
@@ -202,7 +202,7 @@
             </div>
             <div className="bg-white p-4 rounded-3xl">
               <h3 className="text-gray-500 text-[13px]">
-                Booked/Total Seekers Per Month
+                Total Seekers Per Month
               </h3>
               <p className="text-2xl font-semibold mt-3">
                 {formatNumber(statsData.bookedSeekersMonth)} /{" "}

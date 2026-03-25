@@ -370,7 +370,7 @@ const Users = () => {
                       />
                       {user.name}
                     </div>
-                    <div className="py-4">{user.email}</div>
+                    <div className="py-4 truncate">{user.email}</div>
 
                     {activeTab === "listers" && (
                       <>
