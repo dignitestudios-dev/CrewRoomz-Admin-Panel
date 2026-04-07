@@ -10,10 +10,9 @@ const Transactions = () => {
   const [loading, setLoading] = useState(false);
   const [statsLoading, setStatsLoading] = useState(false);
   const [stats, setStats] = useState({
-    subscriptionDay: 0,
-    subscriptionMonth: 0,
-    platformDay: 0,
-    platformMonth: 0,
+    booking: 0,
+    subscription: 0,
+    totalRevenue: 0,
   });
 
   const [pagination, setPagination] = useState({
@@ -26,22 +25,24 @@ const Transactions = () => {
   const [endDate, setEndDate] = useState(null);
 
   // ---------- 📊 FETCH STATS ----------
-  const fetchStats = async () => {
+  const fetchStats = async (start = startDate, end = endDate) => {
     setStatsLoading(true);
     try {
-      const [subDay, subMonth, platDay, platMonth] = await Promise.all([
-        axios.get("/admin/subscriptionRevenue?filter=day"),
-        axios.get("/admin/subscriptionRevenue?filter=month"),
-        axios.get("/admin/platformRevenue?filter=day"),
-        axios.get("/admin/platformRevenue?filter=month"),
-      ]);
+      let query = `/admin/getRevenueStats`;
 
-      setStats({
-        subscriptionDay: subDay.data?.data?.totalRevenue || 0,
-        subscriptionMonth: subMonth.data?.data?.totalRevenue || 0,
-        platformDay: platDay.data?.data?.totalRevenue || 0,
-        platformMonth: platMonth.data?.data?.totalRevenue || 0,
-      });
+      if (start) query += `?startDate=${start.toISOString().split("T")[0]}`;
+      if (end)
+        query += `${start ? "&" : "?"}endDate=${end.toISOString().split("T")[0]}`;
+
+      const response = await axios.get(query);
+
+      if (response.data.success) {
+        setStats({
+          booking: response.data.data.bookingRevenue || 0,
+          subscription: response.data.data.subscriptionRevenue || 0,
+          totalRevenue: response.data.data.totalRevenue || 0,
+        });
+      }
     } catch (error) {
       console.error("Error fetching revenue stats:", error);
     } finally {
@@ -54,20 +55,23 @@ const Transactions = () => {
   }, []);
 
   // ---------- 💰 FETCH TRANSACTIONS ----------
-  const fetchTransactions = async (page = 1) => {
+  const fetchTransactions = async (
+    page = 1,
+    start = startDate,
+    end = endDate,
+  ) => {
     setLoading(true);
     try {
       let query = `/admin/bookingTransactions?page=${page}`;
-      if (startDate)
-        query += `&startDate=${startDate.toISOString().split("T")[0]}`;
-      if (endDate) query += `&endDate=${endDate.toISOString().split("T")[0]}`;
+
+      if (start) query += `&startDate=${start.toISOString().split("T")[0]}`;
+      if (end) query += `&endDate=${end.toISOString().split("T")[0]}`;
 
       const response = await axios.get(query);
+
       if (response.data.success) {
         setTransactions(response.data.data.transactions);
         setPagination(response.data.data.pagination);
-      } else {
-        console.error("Failed to fetch transactions");
       }
     } catch (error) {
       console.error("Error fetching transactions:", error);
@@ -95,12 +99,22 @@ const Transactions = () => {
       currentPage: 1,
     }));
     fetchTransactions(1);
+    fetchStats();
   };
 
   const handleClearDateFilters = () => {
-    window.location.reload();
-  };
+    setPagination((prev) => ({
+      ...prev,
+      currentPage: 1,
+    }));
 
+    setStartDate(null);
+    setEndDate(null);
+
+    // 👇 pass null explicitly
+    fetchTransactions(1, null, null);
+    fetchStats(null, null);
+  };
   // ---------- 🩶 SHIMMERS ----------
   const ShimmerRow = () => (
     <div className="grid grid-cols-6 border-b last:border-none animate-pulse gap-4 space-y-4">
@@ -172,7 +186,7 @@ const Transactions = () => {
       </div>
 
       {/* ---------- 💹 Revenue Stats Section ---------- */}
-      <div className="grid grid-cols-4 gap-4 mb-4">
+      <div className="grid grid-cols-3 gap-4 mb-4">
         {statsLoading
           ? Array(4)
               .fill(0)
@@ -188,15 +202,15 @@ const Transactions = () => {
           : [
               {
                 label: "Total Revenue",
-                value: stats.subscriptionDay,
+                value: stats.totalRevenue,
               },
               {
                 label: "Subscription Revenue",
-                value: stats.subscriptionDay,
+                value: stats.subscription,
               },
               {
                 label: "Platform Revenue",
-                value: stats.platformDay,
+                value: stats.totalRevenue,
               },
               // {
               //   label: "Subscription Revenue (Day)",
@@ -219,7 +233,9 @@ const Transactions = () => {
                 key={i}
                 className="bg-white p-4 rounded-3xl text-left w-auto h-[112px] overflow-hidden"
               >
-                <h3 className="text-gray-500 text-[13px] leading-tight truncate">
+                <h3
+                  className={`text-gray-500 text-[13px] ${item.label === "Total Revenue" ? "font-semibold" : ""} leading-tight truncate`}
+                >
                   {item.label}
                 </h3>
                 <p

@@ -232,8 +232,9 @@ const DummyHome = () => {
       <h1 className="text-[36px] mt-4 font-extrabold text-black">Dashboard</h1>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         {[
+          { label: "Total Revenue", value: stats.totalRevenue },
           { label: "Total Listings", value: stats.totalListings },
           {
             label: "Active Users (Listers + Seekers)",
