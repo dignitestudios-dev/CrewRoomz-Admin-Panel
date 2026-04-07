@@ -6,14 +6,7 @@ import {
   FaClipboardList,
 } from "react-icons/fa";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
-import {
-  LineChart,
-  Line,
-  CartesianGrid,
-  XAxis,
-  YAxis,
-  Legend,
-} from "recharts";
+import { LineChart, Line, CartesianGrid, XAxis, YAxis, Legend } from "recharts";
 import { Chart } from "react-google-charts";
 import { useNavigate } from "react-router";
 import axios from "../../axios"; // Make sure axios is configured correctly
@@ -23,7 +16,7 @@ const DummyHome = () => {
   const navigate = useNavigate();
 
   const handleViewAll = () => {
-    navigate('/app/recent-subscription');
+    navigate("/app/recent-subscription");
   };
 
   const [stats, setStats] = useState({
@@ -42,9 +35,8 @@ const DummyHome = () => {
   const [revenueData, setRevenueData] = useState([]);
   const [monthlyRevenueData, setMonthlyRevenueData] = useState([]);
 
-
   // Fetch Stats
-   useEffect(() => {
+  useEffect(() => {
     const fetchStats = async () => {
       try {
         const response = await axios.get("/admin/getStates");
@@ -68,7 +60,9 @@ const DummyHome = () => {
     const fetchSubscriptions = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(`/admin/subscriptions?page=${currentPage}`);
+        const response = await axios.get(
+          `/admin/subscriptions?page=${currentPage}`,
+        );
         if (response.data.success) {
           setSubscriptions(response.data.data.subscriptions);
           setTotalPages(response.data.data.pagination.totalPages);
@@ -110,7 +104,7 @@ const DummyHome = () => {
   ];
 
   // Pie Chart Data (Google Charts format)
- // Fetch Revenue by Plan
+  // Fetch Revenue by Plan
   useEffect(() => {
     const fetchRevenueData = async () => {
       try {
@@ -138,32 +132,29 @@ const DummyHome = () => {
     fetchRevenueData();
   }, []);
 
-
-
   useEffect(() => {
-  const fetchMonthlyRevenue = async () => {
-    try {
-      const response = await axios.get("/admin/monthlyRevenue");
-      if (response.data.success) {
-        const formattedData = response.data.data.map((item) => ({
-          month: item.month,
-          revenue: item.revenue,
-        }));
-        setMonthlyRevenueData(formattedData);
-      } else {
-        setError("Failed to load monthly revenue data");
+    const fetchMonthlyRevenue = async () => {
+      try {
+        const response = await axios.get("/admin/monthlyRevenue");
+        if (response.data.success) {
+          const formattedData = response.data.data.map((item) => ({
+            month: item.month,
+            revenue: item.revenue,
+          }));
+          setMonthlyRevenueData(formattedData);
+        } else {
+          setError("Failed to load monthly revenue data");
+        }
+      } catch (err) {
+        console.error("Error fetching monthly revenue:", err);
+        setError("An error occurred while fetching the monthly revenue data");
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      console.error("Error fetching monthly revenue:", err);
-      setError("An error occurred while fetching the monthly revenue data");
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
 
-  fetchMonthlyRevenue();
-}, []);
-
+    fetchMonthlyRevenue();
+  }, []);
 
   // Pie chart options
   const pieOptions = {
@@ -209,7 +200,6 @@ const DummyHome = () => {
     },
   ];
 
-
   const Loader = () => (
     <div className="flex justify-center items-center space-x-2">
       <div className="w-10 h-10 border-4 border-t-4 border-gray-200 rounded-full animate-spin border-t-[#4A90E2]"></div>
@@ -229,12 +219,12 @@ const DummyHome = () => {
   }
 
   const formatNumber = (num) => {
-  if (num === null || num === undefined) return "—";
-  if (num >= 1_000_000_000) return (num / 1_000_000_000).toFixed(1) + "B";
-  if (num >= 1_000_000) return (num / 1_000_000).toFixed(1) + "M";
-  if (num >= 1_000) return (num / 1_000).toFixed(1) + "K";
-  return num.toString();
-};
+    if (num === null || num === undefined) return "—";
+    if (num >= 1_000_000_000) return (num / 1_000_000_000).toFixed(1) + "B";
+    if (num >= 1_000_000) return (num / 1_000_000).toFixed(1) + "M";
+    if (num >= 1_000) return (num / 1_000).toFixed(1) + "K";
+    return num.toString();
+  };
 
   return (
     <div className="p-6 pt-2 space-y-6 h-screen">
@@ -242,47 +232,61 @@ const DummyHome = () => {
       <h1 className="text-[36px] mt-4 font-extrabold text-black">Dashboard</h1>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-  {[
-    { label: "Total Listings", value: stats.totalListings },
-    { label: "Active Users (Listers + Users)", value: stats.totalActiveUsers },
-    { label: "Total Bookings", value: stats.totalBookings },
-    { label: "Revenue", value: `$${formatNumber(stats.totalRevenue)}` },
-    { label: "Reports Pending Review", value: stats.pendingReports },
-  ].map((item, i) => (
-    <div
-      key={i}
-      className="bg-white p-4 rounded-3xl text-left w-[209px] h-[112px] overflow-hidden"
-    >
-      <h3 className="text-gray-500 text-[13px] leading-tight truncate">
-        {item.label}
-      </h3>
-      <p
-        className="text-4xl font-semibold mt-3 truncate"
-        title={item.value} // show full number on hover
-      >
-        {formatNumber(item.value)}
-      </p>
-    </div>
-  ))}
-</div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {[
+          { label: "Total Listings", value: stats.totalListings },
+          {
+            label: "Active Users (Listers + Seekers)",
+            value: stats.totalActiveUsers,
+          },
+          { label: "Total Bookings", value: stats.totalBookings },
+          // { label: "Revenue", value: `$${formatNumber(stats.totalRevenue)}` },
+          { label: "Reports Pending Review", value: stats.pendingReports },
+        ].map((item, i) => (
+          <div
+            key={i}
+            className="bg-white p-4 rounded-3xl text-left  h-[112px] overflow-hidden"
+          >
+            <h3 className="text-gray-500 text-[13px] leading-tight truncate">
+              {item.label}
+            </h3>
+            <p
+              className="text-4xl font-semibold mt-3 truncate"
+              title={item.value} // show full number on hover
+            >
+              {formatNumber(item.value)}
+            </p>
+          </div>
+        ))}
+      </div>
 
       {/* Charts */}
       <div className="bg-white p-4 rounded-xl">
         <div className="grid grid-cols-3 md:grid-cols-3 gap-6">
           {/* Line Chart */}
           <div className="bg-[#F9FAFA] rounded-xl p-4 col-span-2">
-            <h3 className="text-lg font-semibold mb-6">Revenue by Users</h3>
-  <ResponsiveContainer width="100%" height={300}>
-    <LineChart data={monthlyRevenueData}>
-      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
-      <XAxis dataKey="month" stroke="#6B7280" />
-      <YAxis stroke="#6B7280" />
-      <Tooltip />
-      <Legend />
-      <Line type="monotone" dataKey="revenue" stroke="#FF7B17" strokeWidth={3} />
-    </LineChart>
-  </ResponsiveContainer>
+            <h3 className="text-lg font-semibold mb-6">
+              Revenue by Users (Listers + Seekers)
+            </h3>
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={monthlyRevenueData}>
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  vertical={false}
+                  stroke="#E5E7EB"
+                />
+                <XAxis dataKey="month" stroke="#6B7280" />
+                <YAxis stroke="#6B7280" />
+                <Tooltip />
+                <Legend />
+                <Line
+                  type="monotone"
+                  dataKey="revenue"
+                  stroke="#FF7B17"
+                  strokeWidth={3}
+                />
+              </LineChart>
+            </ResponsiveContainer>
           </div>
 
           {/* 3D Google Pie Chart */}
@@ -314,7 +318,7 @@ const DummyHome = () => {
             View All
           </button>
         </div>
-        
+
         {/* Subscriptions Table */}
         <div className="bg-white  rounded-xl overflow-auto">
           <div className="w-full bg-[#F9FAFA] rounded-lg p-4">
@@ -346,11 +350,19 @@ const DummyHome = () => {
                     <div className="col-span-1">
                       {moment(sub.createdAt).format("DD, MMM YYYY")}
                     </div>
-                    <div className="col-span-1">{sub._id.slice(-8).toUpperCase()}</div>
+                    <div className="col-span-1">
+                      {sub._id.slice(-8).toUpperCase()}
+                    </div>
                     <div className="col-span-1">{sub.user?.name || "N/A"}</div>
-                    <div className="col-span-1 capitalize">{sub.productId.replace(/_/g, " ")}</div>
-                    <div className="col-span-1 capitalize">{sub.subscriptionPlan}</div>
-                    <div className="col-span-1">${sub.subscriptionPrice.toFixed(2)}</div>
+                    <div className="col-span-1 capitalize">
+                      {sub.productId.replace(/_/g, " ")}
+                    </div>
+                    <div className="col-span-1 capitalize">
+                      {sub.subscriptionPlan}
+                    </div>
+                    <div className="col-span-1">
+                      ${sub.subscriptionPrice.toFixed(2)}
+                    </div>
                   </div>
                 ))}
               </div>

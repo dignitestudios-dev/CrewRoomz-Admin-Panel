@@ -245,7 +245,7 @@ const Users = () => {
             onClick={() => setActiveTab("users")}
             className={`px-14 py-2 rounded-lg font-medium ${activeTab === "users" ? "button-bg text-white" : "text-gray-600 hover:bg-gray-100"}`}
           >
-            Users
+            Seekers
           </button>
         </div>
       </div>

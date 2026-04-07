@@ -7,7 +7,7 @@ export const baseUrl = "https://dev.crewroomz.com";
 
 async function getDeviceFingerprint() {
   const fp = FingerprintJS.load();
-  const result =  fp.get();
+  const result = fp.get();
   console.log(result.visitorId); // Unique device ID
   return result.visitorId;
 }
@@ -15,8 +15,8 @@ async function getDeviceFingerprint() {
 const instance = axios.create({
   baseURL: baseUrl,
   headers: {
-    devicemodel: getDeviceFingerprint(),
-    deviceuniqueid: getDeviceFingerprint(),
+    devicemodel: navigator.userAgent,
+    deviceuniqueid: navigator.userAgent,
   },
   timeout: 10000, // 10 seconds timeout
 });
@@ -26,7 +26,7 @@ instance.interceptors.request.use((request) => {
   if (!navigator.onLine) {
     // No internet connection
     ErrorToast(
-      "No internet connection. Please check your network and try again."
+      "No internet connection. Please check your network and try again.",
     );
     return;
     // return Promise.reject(new Error("No internet connection"));
@@ -55,11 +55,11 @@ instance.interceptors.response.use(
       Cookies.remove("token");
       Cookies.remove("user");
       ErrorToast("Session expired. Please relogin");
-      // window.location.href = "/";s
+      window.location.href = "/";
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 export default instance;

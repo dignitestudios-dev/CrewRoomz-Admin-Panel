@@ -291,7 +291,7 @@
               <div className="py-4 px-4">Bed Count</div>
               <div className="py-4 px-4">Location</div>
               <div className="py-4 px-2">Host Name</div>
-              <div className="py-4">User Name</div>
+              <div className="py-4">Seeker Name</div>
               <div className="py-4">Stay Duration</div>
               <div className="py-4 px-4">Status</div>
             </div>

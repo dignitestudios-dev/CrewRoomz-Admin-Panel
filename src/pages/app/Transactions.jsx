@@ -60,8 +60,7 @@ const Transactions = () => {
       let query = `/admin/bookingTransactions?page=${page}`;
       if (startDate)
         query += `&startDate=${startDate.toISOString().split("T")[0]}`;
-      if (endDate)
-        query += `&endDate=${endDate.toISOString().split("T")[0]}`;
+      if (endDate) query += `&endDate=${endDate.toISOString().split("T")[0]}`;
 
       const response = await axios.get(query);
       if (response.data.success) {
@@ -128,6 +127,50 @@ const Transactions = () => {
         Transaction Overview
       </h1>
 
+      {/* ---------- 📆 Date Filters ---------- */}
+      <div className="flex items-center justify-start space-x-6 pb-6 w-full">
+        <div className="flex flex-col w-56">
+          <label className="text-sm font-semibold text-gray-700 mb-2">
+            Start Date
+          </label>
+          <DatePicker
+            selected={startDate}
+            onChange={(date) => setStartDate(date)}
+            dateFormat="yyyy-MM-dd"
+            className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 w-full"
+            placeholderText="Select start date"
+          />
+        </div>
+
+        <div className="flex flex-col w-56">
+          <label className="text-sm font-semibold text-gray-700 mb-2">
+            End Date
+          </label>
+          <DatePicker
+            selected={endDate}
+            onChange={(date) => setEndDate(date)}
+            dateFormat="yyyy-MM-dd"
+            className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 w-full"
+            placeholderText="Select end date"
+            minDate={startDate}
+          />
+        </div>
+
+        <button
+          onClick={handleDateChange}
+          className="px-6 mt-6 py-2 button-bg text-white font-semibold rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        >
+          Apply Filter
+        </button>
+
+        <button
+          onClick={handleClearDateFilters}
+          className="px-6 py-2 mt-6 bg-gray-300 text-black font-semibold rounded-lg hover:bg-gray-400"
+        >
+          Clear Filter
+        </button>
+      </div>
+
       {/* ---------- 💹 Revenue Stats Section ---------- */}
       <div className="grid grid-cols-4 gap-4 mb-4">
         {statsLoading
@@ -144,21 +187,33 @@ const Transactions = () => {
               ))
           : [
               {
-                label: "Subscription Revenue (Day)",
+                label: "Total Revenue",
                 value: stats.subscriptionDay,
               },
               {
-                label: "Subscription Revenue (Month)",
-                value: stats.subscriptionMonth,
+                label: "Subscription Revenue",
+                value: stats.subscriptionDay,
               },
               {
-                label: "Platform Revenue (Day)",
+                label: "Platform Revenue",
                 value: stats.platformDay,
               },
-              {
-                label: "Platform Revenue (Month)",
-                value: stats.platformMonth,
-              },
+              // {
+              //   label: "Subscription Revenue (Day)",
+              //   value: stats.subscriptionDay,
+              // },
+              // {
+              //   label: "Subscription Revenue (Month)",
+              //   value: stats.subscriptionMonth,
+              // },
+              // {
+              //   label: "Platform Revenue (Day)",
+              //   value: stats.platformDay,
+              // },
+              // {
+              //   label: "Platform Revenue (Month)",
+              //   value: stats.platformMonth,
+              // },
             ].map((item, i) => (
               <div
                 key={i}
@@ -202,50 +257,8 @@ const Transactions = () => {
           </button>
         </div>
 
-        {/* ---------- 📆 Date Filters ---------- */}
         {/* {activeTab === "bookings" && ( */}
-          <div className="flex items-center justify-end space-x-6 w-full">
-            <div className="flex flex-col w-56">
-              <label className="text-sm font-semibold text-gray-700 mb-2">
-                Start Date
-              </label>
-              <DatePicker
-                selected={startDate}
-                onChange={(date) => setStartDate(date)}
-                dateFormat="yyyy-MM-dd"
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 w-full"
-                placeholderText="Select start date"
-              />
-            </div>
 
-            <div className="flex flex-col w-56">
-              <label className="text-sm font-semibold text-gray-700 mb-2">
-                End Date
-              </label>
-              <DatePicker
-                selected={endDate}
-                onChange={(date) => setEndDate(date)}
-                dateFormat="yyyy-MM-dd"
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 w-full"
-                placeholderText="Select end date"
-                minDate={startDate}
-              />
-            </div>
-
-            <button
-              onClick={handleDateChange}
-              className="px-6 mt-6 py-2 button-bg text-white font-semibold rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
-            >
-              Apply Filter
-            </button>
-
-            <button
-              onClick={handleClearDateFilters}
-              className="px-6 py-2 mt-6 bg-gray-300 text-black font-semibold rounded-lg hover:bg-gray-400"
-            >
-              Clear Filter
-            </button>
-          </div>
         {/* )} */}
       </div>
 
@@ -257,7 +270,7 @@ const Transactions = () => {
               <div className="grid grid-cols-7 text-left bg-[#DEF5FF] rounded-lg font-medium">
                 <div className="py-4 px-4">#</div>
                 <div className="py-4">Lister Name</div>
-                <div className="py-4 px-4">User Name</div>
+                <div className="py-4 px-4">Seeker Name</div>
                 <div className="py-4 px-4">Total Price</div>
                 <div className="py-4 px-4">Platform Fee</div>
                 <div className="py-4 px-4">Admin Commission</div>
@@ -275,9 +288,11 @@ const Transactions = () => {
                     >
                       <div className="py-4 px-4">{index + 1}</div>
                       <div className="py-4">{transaction.lister.name}</div>
-                      <div className="py-4 px-8">{transaction.user.name}</div>
+                      <div className="py-4 px-4">{transaction.user.name}</div>
                       <div className="py-4 px-8">${transaction.totalPrice}</div>
-                      <div className="py-4 px-8">${transaction.platformFee}</div>
+                      <div className="py-4 px-8">
+                        ${transaction.platformFee}
+                      </div>
                       <div className="py-4 px-8">
                         {transaction.adminCommission}% ($
                         {transaction.adminCommissionAmount})
@@ -292,12 +307,9 @@ const Transactions = () => {
         </div>
       )}
 
-{activeTab === "subscriptions" && (
-  <RecentSubscriptionTable
-    startDate={startDate}
-    endDate={endDate}
-  />
-)}
+      {activeTab === "subscriptions" && (
+        <RecentSubscriptionTable startDate={startDate} endDate={endDate} />
+      )}
     </div>
   );
 };
