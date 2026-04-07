@@ -1,5 +1,7 @@
 import { NavLink, useNavigate } from "react-router";
 import { useState } from "react";
+import axios from "../../axios";
+import { ErrorToast } from "../global/Toaster";
 import { sidebarData } from "../../static/Sidebar";
 import { LogOut } from "lucide-react";
 import { Logo, sidebar } from "../../assets/export";
@@ -7,39 +9,52 @@ import { Logo, sidebar } from "../../assets/export";
 const DummySidebar = () => {
   const navigate = useNavigate();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleLogout = () => {
-    // ✅ Clear all cookies
-    document.cookie.split(";").forEach((c) => {
-      document.cookie = c
-        .replace(/^ +/, "")
-        .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
-    });
+  const handleLogout = async () => {
+    setLoading(true);
 
-    // ✅ Clear localStorage and sessionStorage
-    localStorage.clear();
-    sessionStorage.clear();
+    try {
+      await axios.post("/auth/logout");
 
-    // ✅ Navigate to login page (or home)
-    navigate("/auth/login");
+      // ✅ Clear all cookies after successful server logout
+      document.cookie.split(";").forEach((c) => {
+        document.cookie = c
+          .replace(/^ +/, "")
+          .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+      });
+
+      // ✅ Clear localStorage and sessionStorage
+      localStorage.clear();
+      sessionStorage.clear();
+
+      setShowLogoutModal(false);
+      navigate("/auth/login");
+    } catch (error) {
+      const message =
+        error?.response?.data?.message || "Network error. Please try again.";
+      ErrorToast(message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-<div
+    <div
       className="w-72 h-full border-r overflow-y-auto pl-4 px-8 py-6 flex flex-col gap-4"
       style={{
         backgroundImage: `url(${sidebar})`, // Apply the background image from assets
         backgroundSize: "cover", // Ensure the image covers the entire sidebar
         backgroundPosition: "center", // Center the background image
       }}
-    >   
-    <img
+    >
+      <img
         src={Logo}
         loading="lazy"
         alt="logo-organization"
         className="h-20 w-20 cursor-pointer mb-6"
       />
-       {sidebarData?.map((sidebar) => (
+      {sidebarData?.map((sidebar) => (
         <NavLink
           key={sidebar?.link}
           className={({ isActive }) =>
@@ -84,9 +99,10 @@ const DummySidebar = () => {
               </button>
               <button
                 onClick={handleLogout}
-                className="bg-red-600 hover:bg-red-700 text-white font-medium px-4 py-2 rounded"
+                disabled={loading}
+                className="bg-red-600 hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium px-4 py-2 rounded"
               >
-                Logout
+                {loading ? "Logging out..." : "Logout"}
               </button>
             </div>
           </div>
