@@ -6,9 +6,9 @@ import FingerprintJS from "@fingerprintjs/fingerprintjs";
 export const baseUrl = "https://dev.crewroomz.com";
 
 async function getDeviceFingerprint() {
-  const fp = FingerprintJS.load();
-  const result = fp.get();
-  console.log(result.visitorId); // Unique device ID
+  const fp = await FingerprintJS.load();
+  const result = await fp.get();
+  console.log("result id -->",result.visitorId);
   return result.visitorId;
 }
 
@@ -16,7 +16,7 @@ const instance = axios.create({
   baseURL: baseUrl,
   headers: {
     devicemodel: navigator.userAgent,
-    deviceuniqueid: navigator.userAgent,
+    deviceuniqueid: getDeviceFingerprint(),
   },
   timeout: 10000, // 10 seconds timeout
 });
