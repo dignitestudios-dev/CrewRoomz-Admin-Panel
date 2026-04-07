@@ -30,9 +30,9 @@ const Transactions = () => {
     try {
       let query = `/admin/getRevenueStats`;
 
-      if (start) query += `?startDate=${start.toISOString().split("T")[0]}`;
+      if (start) query += `?fromDate=${start.toISOString().split("T")[0]}`;
       if (end)
-        query += `${start ? "&" : "?"}endDate=${end.toISOString().split("T")[0]}`;
+        query += `${start ? "&" : "?"}toDate=${end.toISOString().split("T")[0]}`;
 
       const response = await axios.get(query);
 
