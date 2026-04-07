@@ -8,17 +8,22 @@ export const baseUrl = "https://dev.crewroomz.com";
 async function getDeviceFingerprint() {
   const fp = await FingerprintJS.load();
   const result = await fp.get();
-  console.log("result id -->",result.visitorId);
+  console.log("result id -->", result.visitorId);
   return result.visitorId;
 }
 
 const instance = axios.create({
   baseURL: baseUrl,
-  headers: {
-    devicemodel: navigator.userAgent,
-    deviceuniqueid: getDeviceFingerprint(),
-  },
-  timeout: 10000, // 10 seconds timeout
+  timeout: 10000,
+});
+
+instance.interceptors.request.use(async (config) => {
+  const deviceId = await getDeviceFingerprint();
+
+  config.headers.devicemodel = navigator.userAgent;
+  config.headers.deviceuniqueid = deviceId;
+
+  return config;
 });
 
 instance.interceptors.request.use((request) => {
