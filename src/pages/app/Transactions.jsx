@@ -188,7 +188,7 @@ const Transactions = () => {
       {/* ---------- 💹 Revenue Stats Section ---------- */}
       <div className="grid grid-cols-3 gap-4 mb-4">
         {statsLoading
-          ? Array(4)
+          ? Array(3)
               .fill(0)
               .map((_, i) => (
                 <div
