@@ -255,7 +255,9 @@ const DummyHome = () => {
               className="text-4xl font-semibold mt-3 truncate"
               title={item.value} // show full number on hover
             >
-              {formatNumber(item.value)}
+              {item.label === "Total Revenue"
+                ? "$" + item.value
+                : formatNumber(item.value)}
             </p>
           </div>
         ))}

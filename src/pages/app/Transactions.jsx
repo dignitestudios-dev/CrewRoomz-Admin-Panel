@@ -242,7 +242,7 @@ const Transactions = () => {
                   className="text-4xl font-semibold mt-3 truncate"
                   title={item.value}
                 >
-                  ${formatNumber(item.value)}
+                  ${item.value}
                 </p>
               </div>
             ))}
