@@ -3,9 +3,9 @@ import { ErrorToast } from "./components/global/Toaster"; // Import your toaster
 import Cookies from "js-cookie";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 
-export const baseUrl = "https://dev.crewroomz.com";
+// export const baseUrl = "https://dev.crewroomz.com";
 
-// export const baseUrl = "https://dev.crewroomz.com/dev";
+export const baseUrl = "https://dev.crewroomz.com/dev";
 
 async function getDeviceFingerprint() {
   const fp = await FingerprintJS.load();
