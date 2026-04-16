@@ -44,6 +44,20 @@ const Notifications = () => {
     </div>
   );
 
+
+
+ const getDisplayDate = (notification) => {
+  if (!notification.isDelivered && notification.scheduledAt) {
+    return new Date(notification.scheduledAt);
+  }
+
+  if (notification.deliveredAt) {
+    return new Date(notification.deliveredAt);
+  }
+
+  return new Date(notification.createdAt);
+};
+
   return (
     <div className="p-6 pt-2 min-h-screen">
       {/* Heading */}
@@ -95,15 +109,25 @@ const Notifications = () => {
                     <div className="py-4 px-4">{index + 1}</div>
                     <div className="py-4 px-4 flex items-center gap-2">{notification.title}</div>
                     <div className="py-4 px-4 col-span-2">{notification.description}</div>
-                    <div className="py-4 px-4">
+                    {/* <div className="py-4 px-4">
                       {new Date(notification.createdAt).toLocaleDateString()}
                     </div>
                     <div className="py-4 px-4">
                       {new Date(notification.createdAt).toLocaleTimeString()}
-                    </div>
+                    </div> */}
                     <div className="py-4 px-4">
-                      {notification.isDelivered ? "Delivered" : "Pending"}
-                    </div>
+  {getDisplayDate(notification).toLocaleDateString()}
+</div>
+<div className="py-4 px-4">
+  {getDisplayDate(notification).toLocaleTimeString()}
+</div>
+                    <div className="py-4 px-4">
+  {!notification.isDelivered && notification.scheduledAt
+    ? "Scheduled"
+    : notification.isDelivered
+    ? "Delivered"
+    : "Pending"}
+</div>
                     {/* <div className="py-4 px-4 text-red-500">
                       <Trash2 />
                     </div> */}
